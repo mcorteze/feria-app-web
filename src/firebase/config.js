@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, GoogleAuthProvider } from 'firebase/auth'
+import { browserLocalPersistence, getAuth, GoogleAuthProvider, setPersistence } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
@@ -16,5 +16,11 @@ const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 export const googleProvider = new GoogleAuthProvider()
 export const db = getFirestore(app)
+
+// La app vive en un dominio (github.io) distinto al authDomain de Firebase
+// (*.firebaseapp.com). Safari/Chrome móvil bloquean el almacenamiento entre
+// dominios que signInWithRedirect necesita por defecto — forzar persistencia
+// local explícita evita que la sesión se pierda al volver del redirect.
+export const authReady = setPersistence(auth, browserLocalPersistence)
 
 export default app

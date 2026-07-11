@@ -7,7 +7,7 @@ import {
   updateProfile,
 } from 'firebase/auth'
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
-import { auth, db, googleProvider } from '../firebase/config'
+import { auth, authReady, db, googleProvider } from '../firebase/config'
 
 function isMobileDevice() {
   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
@@ -31,6 +31,7 @@ async function ensureUserDoc(user) {
 }
 
 export async function signInWithGoogle() {
+  await authReady
   if (isMobileDevice()) {
     await signInWithRedirect(auth, googleProvider)
     return null
@@ -41,6 +42,7 @@ export async function signInWithGoogle() {
 }
 
 export async function consumeRedirectResult() {
+  await authReady
   const result = await getRedirectResult(auth)
   if (result?.user) {
     await ensureUserDoc(result.user)
