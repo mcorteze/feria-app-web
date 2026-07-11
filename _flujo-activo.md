@@ -1,8 +1,8 @@
 # Flujo activo — Feria App Web
-Actualizado: 2026-07-10
+Actualizado: 2026-07-11
 
 ## Tarea actual
-Sitio migrado a Netlify (feria-app-web.netlify.app) + origen OAuth agregado en Google Cloud Console. Esperando confirmación del usuario de que el login ya funciona de forma estable.
+Fix real de login aplicado (commit `d56fa2d`, pusheado a main) tras iteración excesiva la noche del 2026-07-10. Esperando confirmación del usuario de que el login funciona de forma estable en su celular tras el redeploy automático de Netlify.
 
 ## Decisiones tomadas esta sesión
 - [2026-07-10] Réplica web fiel de feria-app (React Native/Expo) en React + Firebase, mobile-first, "mismo flujo pero con mejoras en base a auditoría profunda" (petición explícita del usuario).
@@ -65,3 +65,8 @@ Sitio migrado a Netlify (feria-app-web.netlify.app) + origen OAuth agregado en G
   - Verificado con `curl`: `Cross-Origin-Opener-Policy: unsafe-none` confirmado activo en `https://feria-app-web.netlify.app/`.
   - **Aun con COOP correcto, el popup seguía fallando** con error "The requested action is invalid" (`auth/internal-error` o similar). Causa: Firebase Auth usa por debajo un **OAuth 2.0 Client ID de Google Cloud Console** con su propia lista separada de "Authorized JavaScript origins" — agregar el dominio en Firebase Console (Authentication → Authorized domains) NO alimenta esta lista automáticamente, son dos configuraciones independientes. Se encontró en **Google Cloud Console → APIs & Services → Credentials** (proyecto `feria-app-web`, no confundir con otros proyectos del usuario como `aloasesoriasexcel`) el "Web client (auto created by Google Service)", y se agregó `https://feria-app-web.netlify.app` a sus Authorized JavaScript origins. Los cambios de OAuth Client tardan unos minutos en propagar.
   - **Nota de proceso**: el CLI de `firebase-tools` no puede autenticarse desde este entorno (Bash ni PowerShell) en ningún modo — ni `login` ni `login:ci` funcionan de forma no interactiva. Cualquier operación que requiera `firebase login` debe correrla el usuario en su propia terminal fuera de esta sesión.
+
+- **2026-07-11 — Regresión y fix real.** Un commit posterior (`31af033`, madrugada del 11) volvió a `signInWithRedirect` en móvil porque el popup "no se abría en absoluto" ahí — esto **resucitó Bounce Tracking Protection**, ya diagnosticado y resuelto el día anterior. Causa raíz correcta encontrada: `signInWithGoogle()` hacía `await authReady` **antes** de `signInWithPopup`, y ese await (aunque la promesa ya estuviera resuelta) rompe el requisito del navegador de que `window.open()` se dispare de forma completamente síncrona dentro del gesto de click en móvil — el navegador lo bloquea sin lanzar error capturable. No era un problema de popup vs. redirect, era un `await` mal ubicado.
+  - Fix (commit `d56fa2d`): se quitó el `await authReady` del camino síncrono de `signInWithGoogle` y se usa `signInWithPopup` siempre, en todos los dispositivos. `authReady` se sigue dejando disparar desde el import de `config.js`, y para cuando el usuario alcanza a tocar el botón ya está resuelto en la práctica.
+  - `npm run build` verificado limpio. Push a `main` — Netlify redespliega automáticamente.
+  - **Lección para no repetir**: cuando un fix de auth "no funciona" en un dispositivo, verificar primero si hay un `await` (aunque sea a algo ya resuelto) antes de la llamada que abre el popup, en vez de saltar a cambiar de mecanismo (popup↔redirect). Cambiar de mecanismo sin diagnosticar la causa exacta fue lo que produjo el ciclo de iteración de la noche del 10 al 11.
