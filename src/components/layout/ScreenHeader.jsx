@@ -17,7 +17,7 @@ export default function ScreenHeader({
             onClick={onBack}
             aria-label="Volver"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={22} />
           </button>
         ) : null}
         {onTitleClick ? (

@@ -51,7 +51,7 @@ export default function ProductsCatalog() {
 
       <div className="screen-content">
         <div className="search-bar">
-          <Search size={18} className="search-bar__icon" />
+          <Search size={19} className="search-bar__icon" />
           <input
             className="search-bar__input"
             placeholder="Buscar producto..."

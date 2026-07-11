@@ -62,7 +62,7 @@ export default function BuyerHome() {
               aria-label="Catálogo de productos"
               title="Catálogo de productos"
             >
-              <ShoppingBasket size={20} />
+              <ShoppingBasket size={22} />
             </button>
             <button
               type="button"
@@ -71,7 +71,7 @@ export default function BuyerHome() {
               aria-label="Historial de compras"
               title="Historial"
             >
-              <HistoryIcon size={20} />
+              <HistoryIcon size={22} />
             </button>
             <button
               type="button"
@@ -80,7 +80,7 @@ export default function BuyerHome() {
               aria-label="Cambiar de rol"
               title="Cambiar de rol"
             >
-              <ArrowLeftRight size={20} />
+              <ArrowLeftRight size={22} />
             </button>
           </>
         }
@@ -127,7 +127,7 @@ export default function BuyerHome() {
                       <Avatar
                         photoURL={planner?.photoURL}
                         name={planner?.displayName}
-                        size={20}
+                        size={22}
                       />
                       <span className="list-card-meta">
                         {planner?.displayName || 'Planificador'} · {formatDateTime(list.createdAt)}
@@ -142,7 +142,7 @@ export default function BuyerHome() {
                       }}
                       aria-label="Eliminar lista"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={18} />
                     </button>
                   </div>
                 </Card>

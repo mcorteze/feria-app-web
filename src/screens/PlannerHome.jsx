@@ -83,7 +83,7 @@ export default function PlannerHome() {
               aria-label="Catálogo de productos"
               title="Catálogo de productos"
             >
-              <ShoppingBasket size={20} />
+              <ShoppingBasket size={22} />
             </button>
             <button
               type="button"
@@ -92,7 +92,7 @@ export default function PlannerHome() {
               aria-label="Historial de compras"
               title="Historial"
             >
-              <HistoryIcon size={20} />
+              <HistoryIcon size={22} />
             </button>
             <button
               type="button"
@@ -101,7 +101,7 @@ export default function PlannerHome() {
               aria-label="Cambiar de rol"
               title="Cambiar de rol"
             >
-              <ArrowLeftRight size={20} />
+              <ArrowLeftRight size={22} />
             </button>
           </>
         }

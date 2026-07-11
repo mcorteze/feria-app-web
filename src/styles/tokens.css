@@ -6,10 +6,10 @@
   --color-surface-sunken: #0b0d11;
 
   /* Acento único vibrante — usado con moderación */
-  --color-accent: #3ddc97;
-  --color-accent-strong: #2bc584;
-  --color-accent-bg: rgba(61, 220, 151, 0.12);
-  --color-accent-shadow: rgba(61, 220, 151, 0.28);
+  --color-accent: #6ee23f;
+  --color-accent-strong: #57c92c;
+  --color-accent-bg: rgba(110, 226, 63, 0.13);
+  --color-accent-shadow: rgba(110, 226, 63, 0.3);
 
   /* Rol comprador — variante fría del mismo sistema, no un color nuevo */
   --color-buyer: #5b9dd9;
@@ -17,8 +17,8 @@
   --color-buyer-shadow: rgba(91, 157, 217, 0.28);
 
   /* Semántico: éxito / pendiente / peligro, discretos, no decorativos */
-  --color-success: #3ddc97;
-  --color-success-bg: rgba(61, 220, 151, 0.12);
+  --color-success: #6ee23f;
+  --color-success-bg: rgba(110, 226, 63, 0.13);
   --color-pending: #e0a95e;
   --color-pending-bg: rgba(224, 169, 94, 0.14);
   --color-danger: #e0645e;

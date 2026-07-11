@@ -41,7 +41,7 @@ export default function Modal({ open, onClose, title, children }) {
             onClick={onClose}
             aria-label="Cerrar"
           >
-            <X size={20} />
+            <X size={22} />
           </button>
         </div>
         <div className="ui-modal-body">{children}</div>

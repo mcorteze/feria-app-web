@@ -90,7 +90,7 @@ export default function ProductSelection() {
 
       <div className="screen-content">
         <div className="search-bar">
-          <Search size={18} className="search-bar__icon" />
+          <Search size={19} className="search-bar__icon" />
           <input
             className="search-bar__input"
             placeholder="Buscar producto..."
@@ -102,7 +102,7 @@ export default function ProductSelection() {
 
         {search.trim() && !hasExactMatch ? (
           <button type="button" className="create-product-btn" onClick={handleCreateAndAdd} disabled={saving}>
-            <Plus size={16} /> Crear "{search.trim()}"
+            <Plus size={18} /> Crear "{search.trim()}"
           </button>
         ) : null}
 

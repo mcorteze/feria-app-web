@@ -157,7 +157,7 @@ export default function ActiveList() {
               onClick={() => setShareOpen(true)}
               aria-label="Compartir"
             >
-              <Share2 size={20} />
+              <Share2 size={22} />
             </button>
             {isPlanningMode ? (
               <button
@@ -166,7 +166,7 @@ export default function ActiveList() {
                 onClick={() => setDeleteOpen(true)}
                 aria-label="Eliminar lista"
               >
-                <Trash2 size={20} />
+                <Trash2 size={22} />
               </button>
             ) : null}
           </>
@@ -277,7 +277,7 @@ export default function ActiveList() {
                       onClick={() => setEditItem(item)}
                       aria-label="Editar"
                     >
-                      <Edit2 size={16} />
+                      <Edit2 size={18} />
                     </button>
                     <button
                       type="button"
@@ -285,7 +285,7 @@ export default function ActiveList() {
                       onClick={() => handleRemoveItem(item.id)}
                       aria-label="Eliminar"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={18} />
                     </button>
                   </span>
                 ) : null}
@@ -426,7 +426,7 @@ function BuyItemModal({ item, onClose, onConfirm }) {
           className="btn btn-primary"
           onClick={() => onConfirm(quantity, Number(paidPrice) || 0)}
         >
-          <Check size={16} /> Confirmar
+          <Check size={18} /> Confirmar
         </button>
       </div>
       <QuantityOverlay
