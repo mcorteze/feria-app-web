@@ -21,8 +21,8 @@ export default function Welcome() {
     setSigningIn(true)
     try {
       await signInWithGoogle()
-    } catch {
-      setError('No se pudo iniciar sesión. Intenta nuevamente.')
+    } catch (err) {
+      setError(`Login: ${err?.code || 'error'} — ${err?.message || err}`)
     } finally {
       setSigningIn(false)
     }
@@ -53,6 +53,9 @@ export default function Welcome() {
 
         {!user ? (
           <div className="welcome-auth">
+            <p style={{ fontSize: 11, wordBreak: 'break-all', opacity: 0.6 }}>
+              DEBUG: {window.location.href}
+            </p>
             {(error || authError) ? <p className="welcome-error">{error || authError}</p> : null}
             <button
               type="button"

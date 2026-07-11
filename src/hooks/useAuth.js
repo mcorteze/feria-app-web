@@ -7,8 +7,8 @@ export function useAuth() {
   const [authError, setAuthError] = useState('')
 
   useEffect(() => {
-    consumeRedirectResult().catch(() => {
-      setAuthError('No se pudo iniciar sesión. Intenta nuevamente.')
+    consumeRedirectResult().catch((err) => {
+      setAuthError(`Redirect: ${err?.code || 'error'} — ${err?.message || err}`)
     })
     const unsubscribe = watchAuthState((firebaseUser) => {
       setUser(firebaseUser)
