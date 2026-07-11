@@ -4,7 +4,7 @@
   justify-content: space-between;
   gap: var(--space-2);
   padding: var(--space-4);
-  background: var(--color-ink);
+  background: var(--color-bg);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -26,14 +26,14 @@
   flex-shrink: 0;
   border: none;
   border-radius: 50%;
-  background: var(--color-ink-raised);
-  color: var(--color-text-on-ink);
+  background: var(--color-accent-bg);
+  color: var(--color-accent);
 }
 
 .screen-header__title {
   font-size: var(--font-size-title-sm);
   font-weight: var(--font-weight-title);
-  color: var(--color-text-on-ink);
+  color: var(--color-text-primary);
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -56,7 +56,7 @@
 
 .screen-header__icon-btn--ghost {
   background: transparent;
-  color: var(--color-text-on-ink);
+  color: var(--color-text-secondary);
 }
 
 .screen-header__icon-btn--active {

@@ -1,29 +1,29 @@
 :root {
-  /* Superficies — página gris muy claro, cards blancas */
-  --color-bg: #f4f5f2;
+  /* Superficies — fondo crema cálido, cards blancas */
+  --color-bg: #f7f2e7;
   --color-surface: #ffffff;
   --color-surface-raised: #ffffff;
-  --color-surface-sunken: #e9ebe6;
+  --color-surface-sunken: #efe8d8;
 
-  /* Acento único vibrante — usado con moderación */
-  --color-accent: #6ee23f;
-  --color-accent-strong: #57c92c;
-  --color-accent-bg: rgba(110, 226, 63, 0.13);
-  --color-accent-shadow: rgba(110, 226, 63, 0.3);
+  /* Acento único — verde bosque/oliva, cálido y contenido en vez de ácido */
+  --color-accent: #2f6b3e;
+  --color-accent-strong: #24532f;
+  --color-accent-bg: rgba(47, 107, 62, 0.12);
+  --color-accent-shadow: rgba(47, 107, 62, 0.28);
 
   /* Rol comprador — variante fría del mismo sistema, no un color nuevo */
-  --color-buyer: #5b9dd9;
-  --color-buyer-bg: rgba(91, 157, 217, 0.12);
-  --color-buyer-shadow: rgba(91, 157, 217, 0.28);
+  --color-buyer: #4a7fb0;
+  --color-buyer-bg: rgba(74, 127, 176, 0.12);
+  --color-buyer-shadow: rgba(74, 127, 176, 0.26);
 
-  /* Semántico: éxito / pendiente / peligro, discretos, no decorativos */
-  --color-success: #6ee23f;
-  --color-success-bg: rgba(110, 226, 63, 0.13);
-  --color-pending: #e0a95e;
-  --color-pending-bg: rgba(224, 169, 94, 0.14);
-  --color-danger: #e0645e;
-  --color-danger-strong: #d34e47;
-  --color-danger-bg: rgba(224, 100, 94, 0.14);
+  /* Semántico: éxito / pendiente / peligro — tonos pastel suaves */
+  --color-success: #4d8b5a;
+  --color-success-bg: #dcefd9;
+  --color-pending: #b8862f;
+  --color-pending-bg: #faedcc;
+  --color-danger: #c05a52;
+  --color-danger-strong: #a8453d;
+  --color-danger-bg: rgba(192, 90, 82, 0.14);
 
   /* Rojo/coral vivo — solo para badges de descuento y acciones destructivas
      puntuales inspiradas en la referencia de UI tipo POS; separado a propósito
@@ -31,57 +31,53 @@
   --color-danger-vivid: #ff5a4d;
   --color-danger-vivid-bg: rgba(255, 90, 77, 0.14);
 
-  /* Superficie "completado/pasivo" (ej. item ya comprado) — un gris con
-     cuerpo propio, para seguir leyéndose apagado ahora que la base también
-     es clara (ya no es "la excepción clara en un mar oscuro"). */
-  --color-surface-light: #dde1d6;
-  --color-surface-light-text: #5b6155;
-  --color-surface-light-text-secondary: #85897d;
+  /* Superficie "completado/pasivo" (ej. item ya comprado) — un beige con
+     cuerpo propio, para seguir leyéndose apagado sobre la base crema. */
+  --color-surface-light: #ece4d0;
+  --color-surface-light-text: #6b6152;
+  --color-surface-light-text-secondary: #8f8676;
   --shadow-surface-light: 0 1px 3px rgba(0, 0, 0, 0.08);
 
-  /* Texto */
-  --color-text-primary: #1c1f17;
-  --color-text-secondary: #6b7062;
-  --color-text-tertiary: #8f9488;
-  --color-text-on-accent: #10130b;
+  /* Texto — marrón oscuro cálido, no negro puro, coherente con la base crema */
+  --color-text-primary: #2b2417;
+  --color-text-secondary: #7a7161;
+  --color-text-tertiary: #9c9484;
+  --color-text-on-accent: #ffffff;
 
-  /* Bordes — con más presencia que sobre oscuro, para seguir marcando
-     inputs y separadores sobre fondo claro */
-  --color-border: #dde0d8;
-  --color-border-light: #eceee8;
-  --color-border-mid: #c7cbc0;
+  /* Bordes */
+  --color-border: #e6ddc8;
+  --color-border-light: #f0e9d9;
+  --color-border-mid: #d8cdb2;
 
-  /* Oscuro como acento puntual — reservado EXCLUSIVAMENTE al ScreenHeader,
-     el único bloque oscuro consistente de la app (inspirado en el panel
-     lateral oscuro de la referencia). No reusar en otros componentes. */
-  --color-ink: #1c1f17;
-  --color-ink-raised: #2a2e22;
-  --color-text-on-ink: #f4f5f2;
-  --color-text-on-ink-secondary: #a8ac9f;
+  /* Oscuro — ya no se usa como bloque de fondo del header; se conserva
+     disponible por si algún componente puntual necesita contraste fuerte. */
+  --color-ink: #2b2417;
+  --color-ink-raised: #3c3323;
+  --color-text-on-ink: #f7f2e7;
+  --color-text-on-ink-secondary: #c9c0ac;
 
   /* Categorías semilla — desaturadas para no competir con el acento */
-  --color-cat-verduras: #5fb87a;
+  --color-cat-verduras: #5fa06f;
   --color-cat-frutas: #d99a4e;
-  --color-cat-carnes: #c96a63;
+  --color-cat-carnes: #c07a68;
   --color-cat-abarrotes: #a1876b;
-  --color-cat-lacteos: #cbb96a;
-  --color-cat-aseo: #8890a0;
+  --color-cat-lacteos: #c9ad5e;
+  --color-cat-aseo: #7f8ba0;
 
-  /* Radios — geométricos, contenidos */
-  --radius-card: 14px;
-  --radius-card-sm: 10px;
-  --radius-hero: 16px;
-  --radius-button: 12px;
+  /* Radios — orgánicos, más redondeados que el sistema anterior */
+  --radius-card: 20px;
+  --radius-card-sm: 14px;
+  --radius-hero: 22px;
+  --radius-button: 16px;
   --radius-pill: 999px;
   --radius-fab: 50%;
 
-  /* Sombras — sobre fondo claro necesitan más blur/opacidad para no
-     verse ausentes, sin dejar de ser discretas */
-  --shadow-card: 0 2px 8px rgba(28, 31, 23, 0.08);
+  /* Sombras — suaves y cálidas, coherentes con la base crema */
+  --shadow-card: 0 2px 10px rgba(75, 60, 30, 0.08);
   --shadow-hero-brand: 0 6px 20px -6px var(--color-accent-shadow);
   --shadow-hero-buyer: 0 6px 20px -6px var(--color-buyer-shadow);
-  --shadow-modal: 0 -8px 32px rgba(28, 31, 23, 0.18);
-  --shadow-fab: 0 6px 18px -4px rgba(28, 31, 23, 0.22);
+  --shadow-modal: 0 -8px 32px rgba(43, 36, 23, 0.18);
+  --shadow-fab: 0 6px 18px -4px rgba(43, 36, 23, 0.22);
 
   /* Espaciado */
   --space-1: 8px;
@@ -113,7 +109,7 @@
   color-scheme: light;
 }
 
-/* La app es deliberadamente clara — el verde-accent y --color-ink (reservado
-   al ScreenHeader) son los dos únicos elementos de contraste del sistema.
-   No reintroducir una base oscura ad hoc en un componente nuevo sin pasar
-   por este archivo. */
+/* La app es deliberadamente clara y cálida — fondo crema, sin bloques
+   oscuros. El ScreenHeader ya no usa --color-ink como fondo (ver
+   ScreenHeader.css); ese token queda disponible pero no se reintroduce
+   un bloque oscuro ad hoc en un componente nuevo sin pasar por aquí. */
