@@ -10,7 +10,7 @@ import './Welcome.css'
 
 export default function Welcome() {
   const navigate = useNavigate()
-  const { user, loading } = useAuth()
+  const { user, loading, authError } = useAuth()
   const { name, saveName } = useProfileName(user)
   const [nameDraft, setNameDraft] = useState('')
   const [signingIn, setSigningIn] = useState(false)
@@ -53,7 +53,7 @@ export default function Welcome() {
 
         {!user ? (
           <div className="welcome-auth">
-            {error ? <p className="welcome-error">{error}</p> : null}
+            {(error || authError) ? <p className="welcome-error">{error || authError}</p> : null}
             <button
               type="button"
               className="welcome-google-btn"

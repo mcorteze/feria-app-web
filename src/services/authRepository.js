@@ -1,19 +1,23 @@
 import {
+  getRedirectResult,
   onAuthStateChanged,
   signInWithPopup,
+  signInWithRedirect,
   signOut as firebaseSignOut,
   updateProfile,
 } from 'firebase/auth'
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { auth, db, googleProvider } from '../firebase/config'
 
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+}
+
 export function watchAuthState(callback) {
   return onAuthStateChanged(auth, callback)
 }
 
-export async function signInWithGoogle() {
-  const result = await signInWithPopup(auth, googleProvider)
-  const user = result.user
+async function ensureUserDoc(user) {
   const userRef = doc(db, 'users', user.uid)
   const snap = await getDoc(userRef)
   if (!snap.exists()) {
@@ -24,7 +28,24 @@ export async function signInWithGoogle() {
       createdAt: serverTimestamp(),
     })
   }
-  return user
+}
+
+export async function signInWithGoogle() {
+  if (isMobileDevice()) {
+    await signInWithRedirect(auth, googleProvider)
+    return null
+  }
+  const result = await signInWithPopup(auth, googleProvider)
+  await ensureUserDoc(result.user)
+  return result.user
+}
+
+export async function consumeRedirectResult() {
+  const result = await getRedirectResult(auth)
+  if (result?.user) {
+    await ensureUserDoc(result.user)
+  }
+  return result?.user || null
 }
 
 export function signOut() {
