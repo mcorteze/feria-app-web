@@ -14,10 +14,10 @@ Ninguna en curso. Fase 1 (construcción completa del proyecto) cerrada. Pendient
 - [2026-07-10] Proyecto construido completo vía agente en background: tokens, servicios (repository pattern), hooks de dominio, componentes UI, 7 pantallas, `firestore.rules`. `npm run build` verificado limpio.
 
 ## Pendiente
-- [ ] Confirmar que el primer deploy a GitHub Pages corrió bien (revisar pestaña Actions del repo)
-- [ ] Agregar `feria-app-web.github.io` (o el dominio exacto que asigne Pages) a "Authorized domains" en Firebase Authentication → Settings, si no aparece ya cubierto por el dominio de Firebase
-- [ ] Probar el flujo end-to-end en la URL pública (login Google, crear lista, unirse como comprador)
-- [ ] Code-splitting del bundle de Firebase si el tamaño (~837KB) llega a ser un problema real (nota del agente constructor, no urgente)
+- [ ] Confirmar que el deploy a GitHub Pages corrió bien tras el push del seed de productos (revisar pestaña Actions del repo)
+- [ ] Agregar `mcorteze.github.io` a "Authorized domains" en Firebase Authentication → Settings si el login con Google falla en producción
+- [ ] Probar el flujo end-to-end en https://mcorteze.github.io/feria-app-web/ (login Google, cargar catálogo inicial desde /products, crear lista, unirse como comprador)
+- [ ] Code-splitting del bundle de Firebase si el tamaño (~843KB) llega a ser un problema real (nota del agente constructor, no urgente)
 - [ ] Revisar visualmente fidelidad de diseño en navegador real (mobile viewport) comparando contra capturas del original si el usuario las tiene
 
 ## Contexto crítico (lo que no puede olvidarse)
@@ -37,4 +37,5 @@ Ninguna en curso. Fase 1 (construcción completa del proyecto) cerrada. Pendient
 - `firestore.rules` corregido (el editor de reglas no soporta arrow functions en `.filter()`/`.map()`) — se agregó campo `collaboratorUids` (array plano) para usar `hasAny()`, y se sincronizó en `listsRepository.js`; reglas publicadas exitosamente
 - Categorías semilla: se decidió NO cargarlas en Firestore, se mantiene el fallback local en `categoriesRepository.js`
 - Despliegue a GitHub Pages configurado: `HashRouter` en vez de `BrowserRouter` (evita 404 en subpath al recargar), `base: '/feria-app-web/'` en `vite.config.js`, workflow `.github/workflows/deploy.yml` (build + deploy-pages), 6 GitHub Secrets configurados, Pages Source = GitHub Actions
-- Git inicializado, remote `origin` → `https://github.com/mcorteze/feria-app-web.git`, rama `main`
+- Git inicializado, remote `origin` → `https://github.com/mcorteze/feria-app-web.git`, rama `main`, primer push hecho — sitio publicado en https://mcorteze.github.io/feria-app-web/
+- Seed de catálogo de productos: `categories` usa fallback local (decisión previa, sin cambios). `products` (~100 items del original) NO tenía seed — se creó `src/data/seedProducts.js` con el catálogo completo migrado (category_id numérico → slug de categoría, unidades no soportadas mapeadas: litro→lt, lata/rollo→un, bolsa/sobre/frasco/caja→paquete) y un botón "Cargar catálogo inicial" en `/products` (solo visible si el catálogo está vacío, usa `writeBatch` vía `seedProducts()` en `productsRepository.js`). `EmptyState` ampliado con acción secundaria opcional para soportar el botón "Nuevo producto" junto al de seed.

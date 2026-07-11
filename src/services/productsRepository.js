@@ -8,6 +8,7 @@ import {
   orderBy,
   query,
   updateDoc,
+  writeBatch,
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
 
@@ -53,4 +54,22 @@ export function recordPrice(productId, price) {
     lastPrice: price,
     priceHistory: arrayUnion({ price, date: new Date().toISOString() }),
   })
+}
+
+export async function seedProducts(products, ownerUid) {
+  const batch = writeBatch(db)
+  for (const product of products) {
+    const ref = doc(productsCollection)
+    batch.set(ref, {
+      name: product.name,
+      categoryId: product.categoryId || null,
+      defaultUnit: product.defaultUnit || 'un',
+      lastPrice: null,
+      priceHistory: [],
+      stallId: null,
+      stallName: '',
+      ownerUid,
+    })
+  }
+  await batch.commit()
 }

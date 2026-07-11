@@ -7,8 +7,9 @@ import { useProducts } from '../hooks/useProducts'
 import { useCategories } from '../hooks/useCategories'
 import { useStalls } from '../hooks/useStalls'
 import { useAuth } from '../hooks/useAuth'
-import { createProduct } from '../services/productsRepository'
+import { createProduct, seedProducts } from '../services/productsRepository'
 import { createStall } from '../services/stallsRepository'
+import { SEED_PRODUCTS } from '../data/seedProducts'
 import { formatCurrency } from '../utils/format'
 import '../styles/screen.css'
 import './ProductsCatalog.css'
@@ -21,6 +22,17 @@ export default function ProductsCatalog() {
   const { data: stalls } = useStalls()
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
+  const [seeding, setSeeding] = useState(false)
+
+  async function handleSeed() {
+    if (!user?.uid || seeding) return
+    setSeeding(true)
+    try {
+      await seedProducts(SEED_PRODUCTS, user.uid)
+    } finally {
+      setSeeding(false)
+    }
+  }
 
   const categoryById = useMemo(
     () => new Map(categories.map((c) => [c.id, c])),
@@ -50,13 +62,21 @@ export default function ProductsCatalog() {
 
         {loading ? (
           <LoadingState />
-        ) : filtered.length === 0 ? (
+        ) : filtered.length === 0 && !search ? (
           <EmptyState
             icon={Layers}
             title="Catálogo vacío"
-            message="Agrega productos para reutilizarlos en tus listas."
-            actionLabel="Nuevo producto"
-            onAction={() => setModalOpen(true)}
+            message="Agrega productos para reutilizarlos en tus listas, o carga el catálogo inicial con los productos más comunes de la feria."
+            actionLabel={seeding ? 'Cargando...' : 'Cargar catálogo inicial'}
+            onAction={handleSeed}
+            secondaryActionLabel="Nuevo producto"
+            onSecondaryAction={() => setModalOpen(true)}
+          />
+        ) : filtered.length === 0 ? (
+          <EmptyState
+            icon={Search}
+            title="Sin resultados"
+            message={`No hay productos que coincidan con "${search}".`}
           />
         ) : (
           <div className="catalog-list">

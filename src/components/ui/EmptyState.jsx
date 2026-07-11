@@ -6,6 +6,8 @@ export default function EmptyState({
   message,
   actionLabel,
   onAction,
+  secondaryActionLabel,
+  onSecondaryAction,
 }) {
   return (
     <div className="ui-empty-state">
@@ -19,6 +21,15 @@ export default function EmptyState({
       {actionLabel && onAction ? (
         <button type="button" className="ui-empty-state__action" onClick={onAction}>
           {actionLabel}
+        </button>
+      ) : null}
+      {secondaryActionLabel && onSecondaryAction ? (
+        <button
+          type="button"
+          className="ui-empty-state__secondary-action"
+          onClick={onSecondaryAction}
+        >
+          {secondaryActionLabel}
         </button>
       ) : null}
     </div>
