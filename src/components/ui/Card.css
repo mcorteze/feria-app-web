@@ -1,0 +1,21 @@
+.ui-card {
+  display: block;
+  width: 100%;
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  border: none;
+  padding: var(--space-4);
+  text-align: left;
+  font-family: var(--font-sans);
+  color: inherit;
+}
+
+.ui-card--interactive {
+  cursor: pointer;
+  transition: box-shadow 0.15s ease;
+}
+
+.ui-card--interactive:active {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}

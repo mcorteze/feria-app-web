@@ -1,0 +1,45 @@
+.ui-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-5) var(--space-4);
+  gap: var(--space-2);
+}
+
+.ui-empty-state__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-bg);
+  color: var(--color-text-secondary-alt);
+  margin-bottom: var(--space-2);
+}
+
+.ui-empty-state__title {
+  font-size: var(--font-size-card-sm);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.ui-empty-state__message {
+  font-size: var(--font-size-secondary);
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 280px;
+}
+
+.ui-empty-state__action {
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-brand-bg);
+  color: var(--color-brand);
+  font-weight: 700;
+  font-size: var(--font-size-secondary);
+}

@@ -1,0 +1,28 @@
+.ui-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+
+.ui-loading-state__spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-brand);
+  animation: ui-loading-spin 0.7s linear infinite;
+}
+
+.ui-loading-state__label {
+  font-size: var(--font-size-secondary);
+  color: var(--color-text-secondary);
+}
+
+@keyframes ui-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

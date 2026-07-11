@@ -1,0 +1,178 @@
+:root {
+  /* Marca / planificador */
+  --color-brand: #27ae60;
+  --color-brand-bg: #e8f5e9;
+  --color-brand-bg-alt: #e8f8f5;
+  --color-brand-shadow: rgba(39, 174, 96, 0.35);
+
+  /* Comprador */
+  --color-buyer: #34495e;
+  --color-buyer-bg: #eceff1;
+  --color-buyer-shadow: rgba(52, 73, 94, 0.3);
+
+  /* Totales / finalizar */
+  --color-accent-blue: #1565c0;
+  --color-accent-blue-bg: #e3f2fd;
+
+  /* Pendiente */
+  --color-amber: #ef6c00;
+  --color-amber-bg: #fff3e0;
+  --color-amber-border: #ffe0b2;
+
+  /* Destructivo */
+  --color-danger: #e74c3c;
+  --color-danger-strong: #d32f2f;
+  --color-danger-bg: #ffebee;
+
+  /* Texto */
+  --color-text-primary: #2c3e50;
+  --color-text-primary-alt: #333333;
+  --color-text-secondary: #7f8c8d;
+  --color-text-secondary-alt: #95a5a6;
+  --color-text-tertiary: #666666;
+  --color-text-on-brand: #ffffff;
+
+  /* Fondos */
+  --color-surface: #ffffff;
+  --color-bg: #f5f6fa;
+
+  /* Bordes */
+  --color-border: #e0e0e0;
+  --color-border-light: #eeeeee;
+  --color-border-mid: #dddddd;
+
+  /* Categorías semilla */
+  --color-cat-verduras: #4caf50;
+  --color-cat-frutas: #ff9800;
+  --color-cat-carnes: #f44336;
+  --color-cat-abarrotes: #795548;
+  --color-cat-lacteos: #ffeb3b;
+  --color-cat-aseo: #9e9e9e;
+
+  /* Radios */
+  --radius-card: 16px;
+  --radius-card-sm: 12px;
+  --radius-hero: 20px;
+  --radius-button: 16px;
+  --radius-pill: 999px;
+  --radius-fab: 50%;
+
+  /* Sombras */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-hero-brand: 0 4px 14px var(--color-brand-shadow);
+  --shadow-hero-buyer: 0 4px 14px var(--color-buyer-shadow);
+  --shadow-modal: 0 -4px 24px rgba(0, 0, 0, 0.15);
+  --shadow-fab: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  /* Espaciado */
+  --space-1: 8px;
+  --space-2: 10px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+
+  /* Tipografía */
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  --font-size-title: 24px;
+  --font-size-title-sm: 20px;
+  --font-size-subtitle: 20px;
+  --font-size-subtitle-sm: 18px;
+  --font-size-card: 18px;
+  --font-size-card-sm: 16px;
+  --font-size-secondary: 14px;
+  --font-size-secondary-sm: 12px;
+  --font-size-label: 12px;
+  --font-weight-title: 800;
+  --font-weight-subtitle: 700;
+  --font-weight-card: 700;
+
+  /* Overlay */
+  --color-backdrop: rgba(0, 0, 0, 0.45);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-brand-bg: #1b3b2a;
+    --color-brand-bg-alt: #17362c;
+    --color-buyer-bg: #22303d;
+    --color-accent-blue-bg: #10283f;
+    --color-amber-bg: #3a2a10;
+    --color-amber-border: #5a3d16;
+    --color-danger-bg: #3a1414;
+
+    --color-text-primary: #ecf0f1;
+    --color-text-primary-alt: #ecf0f1;
+    --color-text-secondary: #b0bfc6;
+    --color-text-secondary-alt: #93a5ad;
+    --color-text-tertiary: #a9b6bc;
+
+    --color-surface: #1e2229;
+    --color-bg: #14161b;
+
+    --color-border: #2c313a;
+    --color-border-light: #262b33;
+    --color-border-mid: #333944;
+
+    --color-backdrop: rgba(0, 0, 0, 0.6);
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --color-brand-bg: #1b3b2a;
+  --color-brand-bg-alt: #17362c;
+  --color-buyer-bg: #22303d;
+  --color-accent-blue-bg: #10283f;
+  --color-amber-bg: #3a2a10;
+  --color-amber-border: #5a3d16;
+  --color-danger-bg: #3a1414;
+
+  --color-text-primary: #ecf0f1;
+  --color-text-primary-alt: #ecf0f1;
+  --color-text-secondary: #b0bfc6;
+  --color-text-secondary-alt: #93a5ad;
+  --color-text-tertiary: #a9b6bc;
+
+  --color-surface: #1e2229;
+  --color-bg: #14161b;
+
+  --color-border: #2c313a;
+  --color-border-light: #262b33;
+  --color-border-mid: #333944;
+
+  --color-backdrop: rgba(0, 0, 0, 0.6);
+
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  --color-brand-bg: #e8f5e9;
+  --color-brand-bg-alt: #e8f8f5;
+  --color-buyer-bg: #eceff1;
+  --color-accent-blue-bg: #e3f2fd;
+  --color-amber-bg: #fff3e0;
+  --color-amber-border: #ffe0b2;
+  --color-danger-bg: #ffebee;
+
+  --color-text-primary: #2c3e50;
+  --color-text-primary-alt: #333333;
+  --color-text-secondary: #7f8c8d;
+  --color-text-secondary-alt: #95a5a6;
+  --color-text-tertiary: #666666;
+
+  --color-surface: #ffffff;
+  --color-bg: #f5f6fa;
+
+  --color-border: #e0e0e0;
+  --color-border-light: #eeeeee;
+  --color-border-mid: #dddddd;
+
+  --color-backdrop: rgba(0, 0, 0, 0.45);
+
+  color-scheme: light;
+}

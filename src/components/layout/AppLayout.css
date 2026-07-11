@@ -1,0 +1,17 @@
+.app-layout {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100svh;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+@media (min-width: 480px) {
+  .app-layout {
+    box-shadow: 0 0 0 1px var(--color-border);
+    min-height: 100svh;
+  }
+}

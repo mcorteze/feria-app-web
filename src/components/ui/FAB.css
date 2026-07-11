@@ -1,0 +1,20 @@
+.ui-fab {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-fab);
+  border: none;
+  background: var(--color-brand);
+  color: var(--color-text-on-brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-fab);
+  z-index: 100;
+}
+
+.ui-fab:active {
+  filter: brightness(0.94);
+}

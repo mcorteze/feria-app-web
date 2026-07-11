@@ -1,0 +1,62 @@
+.welcome-content {
+  flex: 1;
+  justify-content: center;
+  align-items: stretch;
+  gap: var(--space-5);
+}
+
+.welcome-brand {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.welcome-title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-title);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.welcome-subtitle {
+  font-size: var(--font-size-secondary);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.welcome-auth {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.welcome-google-btn {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-button);
+  border: 1px solid var(--color-border-mid);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-weight: 700;
+  font-size: var(--font-size-card-sm);
+}
+
+.welcome-error {
+  color: var(--color-danger-strong);
+  font-size: var(--font-size-secondary);
+  margin: 0;
+}
+
+.welcome-roles {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.welcome-greeting {
+  text-align: center;
+  font-size: var(--font-size-card-sm);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-2);
+}

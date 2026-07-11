@@ -1,0 +1,48 @@
+.selection-overlay-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-2);
+}
+
+.selection-overlay-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-card-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  font-weight: 700;
+  font-size: var(--font-size-card-sm);
+  color: var(--color-text-primary);
+}
+
+.selection-overlay-cell--active {
+  background: var(--color-brand);
+  border-color: var(--color-brand);
+  color: var(--color-text-on-brand);
+}
+
+.selection-overlay-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.selection-overlay-row {
+  text-align: left;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-card-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  font-size: var(--font-size-card-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-transform: capitalize;
+}
+
+.selection-overlay-row--active {
+  background: var(--color-brand-bg);
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+}
