@@ -7,6 +7,7 @@ import ActiveList from './screens/ActiveList'
 import ProductSelection from './screens/ProductSelection'
 import ProductsCatalog from './screens/ProductsCatalog'
 import History from './screens/History'
+import FrequentCollaborators from './screens/FrequentCollaborators'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/list/:listId/add-product" element={<ProductSelection />} />
           <Route path="/products" element={<ProductsCatalog />} />
           <Route path="/history" element={<History />} />
+          <Route path="/collaborators" element={<FrequentCollaborators />} />
         </Routes>
       </AppLayout>
     </BrowserRouter>

@@ -1,9 +1,9 @@
 :root {
-  /* Superficies — panel oscuro tipo consola de entrenador */
-  --color-bg: #0f1115;
-  --color-surface: #171a21;
-  --color-surface-raised: #1e222b;
-  --color-surface-sunken: #0b0d11;
+  /* Superficies — página gris muy claro, cards blancas */
+  --color-bg: #f4f5f2;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-surface-sunken: #e9ebe6;
 
   /* Acento único vibrante — usado con moderación */
   --color-accent: #6ee23f;
@@ -31,23 +31,33 @@
   --color-danger-vivid: #ff5a4d;
   --color-danger-vivid-bg: rgba(255, 90, 77, 0.14);
 
-  /* Superficie clara — usada puntualmente para "completado/pasivo" (ej. item
-     ya comprado), en contraste con el resto de la app que es oscura. */
-  --color-surface-light: #eef1e9;
-  --color-surface-light-text: #23261f;
-  --color-surface-light-text-secondary: #6b6f61;
-  --shadow-surface-light: 0 2px 8px rgba(0, 0, 0, 0.18);
+  /* Superficie "completado/pasivo" (ej. item ya comprado) — un gris con
+     cuerpo propio, para seguir leyéndose apagado ahora que la base también
+     es clara (ya no es "la excepción clara en un mar oscuro"). */
+  --color-surface-light: #dde1d6;
+  --color-surface-light-text: #5b6155;
+  --color-surface-light-text-secondary: #85897d;
+  --shadow-surface-light: 0 1px 3px rgba(0, 0, 0, 0.08);
 
   /* Texto */
-  --color-text-primary: #f1f3f5;
-  --color-text-secondary: #9aa2ad;
-  --color-text-tertiary: #6b7280;
-  --color-text-on-accent: #0b0d11;
+  --color-text-primary: #1c1f17;
+  --color-text-secondary: #6b7062;
+  --color-text-tertiary: #8f9488;
+  --color-text-on-accent: #10130b;
 
-  /* Bordes — sutiles, nunca protagonistas */
-  --color-border: #262b35;
-  --color-border-light: #1e222b;
-  --color-border-mid: #333a47;
+  /* Bordes — con más presencia que sobre oscuro, para seguir marcando
+     inputs y separadores sobre fondo claro */
+  --color-border: #dde0d8;
+  --color-border-light: #eceee8;
+  --color-border-mid: #c7cbc0;
+
+  /* Oscuro como acento puntual — reservado EXCLUSIVAMENTE al ScreenHeader,
+     el único bloque oscuro consistente de la app (inspirado en el panel
+     lateral oscuro de la referencia). No reusar en otros componentes. */
+  --color-ink: #1c1f17;
+  --color-ink-raised: #2a2e22;
+  --color-text-on-ink: #f4f5f2;
+  --color-text-on-ink-secondary: #a8ac9f;
 
   /* Categorías semilla — desaturadas para no competir con el acento */
   --color-cat-verduras: #5fb87a;
@@ -65,12 +75,13 @@
   --radius-pill: 999px;
   --radius-fab: 50%;
 
-  /* Sombras — planas, casi ausentes; el acento hace el trabajo */
-  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3);
+  /* Sombras — sobre fondo claro necesitan más blur/opacidad para no
+     verse ausentes, sin dejar de ser discretas */
+  --shadow-card: 0 2px 8px rgba(28, 31, 23, 0.08);
   --shadow-hero-brand: 0 6px 20px -6px var(--color-accent-shadow);
   --shadow-hero-buyer: 0 6px 20px -6px var(--color-buyer-shadow);
-  --shadow-modal: 0 -8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-fab: 0 6px 18px -4px rgba(0, 0, 0, 0.5);
+  --shadow-modal: 0 -8px 32px rgba(28, 31, 23, 0.18);
+  --shadow-fab: 0 6px 18px -4px rgba(28, 31, 23, 0.22);
 
   /* Espaciado */
   --space-1: 8px;
@@ -99,9 +110,10 @@
   /* Overlay */
   --color-backdrop: rgba(0, 0, 0, 0.65);
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
-/* La app está deliberadamente comprometida con un único tema oscuro —
-   no un olvido: el acento y los tonos de superficie están calibrados
-   como sistema, invertirlos ingenuamente rompería el diseño. */
+/* La app es deliberadamente clara — el verde-accent y --color-ink (reservado
+   al ScreenHeader) son los dos únicos elementos de contraste del sistema.
+   No reintroducir una base oscura ad hoc en un componente nuevo sin pasar
+   por este archivo. */

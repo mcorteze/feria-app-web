@@ -65,7 +65,13 @@ export async function getList(listId) {
   return snap.exists() ? { id: snap.id, ...snap.data() } : null
 }
 
-export async function createList(name, owner, role = 'planner') {
+export async function createList(name, owner, role = 'planner', extraCollaborators = []) {
+  const extra = extraCollaborators.map((c) => ({
+    uid: c.uid,
+    displayName: c.displayName || '',
+    photoURL: c.photoURL || '',
+    role: 'buyer',
+  }))
   const docRef = await addDoc(listsCollection, {
     name,
     status: 'active',
@@ -78,8 +84,9 @@ export async function createList(name, owner, role = 'planner') {
         photoURL: owner.photoURL || '',
         role,
       },
+      ...extra,
     ],
-    collaboratorUids: [owner.uid],
+    collaboratorUids: [owner.uid, ...extra.map((c) => c.uid)],
   })
   return docRef.id
 }

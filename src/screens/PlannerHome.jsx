@@ -2,11 +2,14 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeftRight,
+  CheckSquare,
   ClipboardList,
   Download,
   History as HistoryIcon,
   Plus,
   ShoppingBasket,
+  Square,
+  Users,
 } from 'lucide-react'
 import ScreenHeader from '../components/layout/ScreenHeader'
 import {
@@ -21,6 +24,7 @@ import {
   Pill,
 } from '../components/ui'
 import { useAuth } from '../hooks/useAuth'
+import { useFrequentCollaborators } from '../hooks/useFrequentCollaborators'
 import { useLists } from '../hooks/useLists'
 import { useProducts } from '../hooks/useProducts'
 import { createList } from '../services/listsRepository'
@@ -35,9 +39,11 @@ export default function PlannerHome() {
   const { user } = useAuth()
   const { data: lists, loading } = useLists(user?.uid, 'planner')
   const { data: products, loading: productsLoading } = useProducts()
+  const { data: frequentCollaborators } = useFrequentCollaborators(user?.uid)
   const [modalOpen, setModalOpen] = useState(false)
   const [importModalOpen, setImportModalOpen] = useState(false)
   const [nameDraft, setNameDraft] = useState('')
+  const [selectedCollaborators, setSelectedCollaborators] = useState([])
   const [creating, setCreating] = useState(false)
   const [hintDismissed, setHintDismissed] = useState(
     () => localStorage.getItem(CATALOG_HINT_DISMISSED_KEY) === '1',
@@ -53,7 +59,16 @@ export default function PlannerHome() {
 
   function openModal() {
     setNameDraft(`Feria ${formatShortDate(new Date())}`)
+    setSelectedCollaborators([])
     setModalOpen(true)
+  }
+
+  function toggleCollaborator(collaborator) {
+    setSelectedCollaborators((prev) =>
+      prev.some((c) => c.uid === collaborator.uid)
+        ? prev.filter((c) => c.uid !== collaborator.uid)
+        : [...prev, collaborator],
+    )
   }
 
   async function handleCreate(e) {
@@ -61,11 +76,16 @@ export default function PlannerHome() {
     if (!nameDraft.trim() || !user) return
     setCreating(true)
     try {
-      const listId = await createList(nameDraft.trim(), {
-        uid: user.uid,
-        displayName: user.displayName || '',
-        photoURL: user.photoURL || '',
-      })
+      const listId = await createList(
+        nameDraft.trim(),
+        {
+          uid: user.uid,
+          displayName: user.displayName || '',
+          photoURL: user.photoURL || '',
+        },
+        'planner',
+        selectedCollaborators,
+      )
       setModalOpen(false)
       navigate(`/list/${listId}`)
     } finally {
@@ -106,6 +126,15 @@ export default function PlannerHome() {
               title="Importar lista"
             >
               <Download size={22} />
+            </button>
+            <button
+              type="button"
+              className="screen-header__icon-btn screen-header__icon-btn--ghost"
+              onClick={() => navigate('/collaborators')}
+              aria-label="Colaboradores habituales"
+              title="Colaboradores habituales"
+            >
+              <Users size={22} />
             </button>
             <button
               type="button"
@@ -182,6 +211,34 @@ export default function PlannerHome() {
             onChange={(e) => setNameDraft(e.target.value)}
             autoFocus
           />
+
+          {frequentCollaborators.length > 0 ? (
+            <div className="form-field">
+              <span className="form-label">Agregar colaboradores habituales</span>
+              <div className="collaborator-checklist">
+                {frequentCollaborators.map((c) => {
+                  const checked = selectedCollaborators.some((s) => s.uid === c.uid)
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      className="collaborator-checklist__row"
+                      onClick={() => toggleCollaborator(c)}
+                    >
+                      {checked ? (
+                        <CheckSquare size={20} className="item-row__check item-row__check--done" />
+                      ) : (
+                        <Square size={20} className="item-row__check" />
+                      )}
+                      <Avatar photoURL={c.photoURL} name={c.displayName} size={24} />
+                      <span className="list-card-meta">{c.displayName || c.email}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          ) : null}
+
           <div className="form-actions">
             <button
               type="button"
@@ -206,6 +263,7 @@ export default function PlannerHome() {
         onClose={() => setImportModalOpen(false)}
         onImported={(listId) => navigate(`/list/${listId}`)}
         products={products}
+        frequentCollaborators={frequentCollaborators}
       />
     </div>
   )

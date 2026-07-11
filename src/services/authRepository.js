@@ -5,7 +5,16 @@ import {
   signOut as firebaseSignOut,
   updateProfile,
 } from 'firebase/auth'
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from 'firebase/firestore'
 import { auth, authReady, db, googleProvider } from '../firebase/config'
 
 export function watchAuthState(callback) {
@@ -18,7 +27,7 @@ async function ensureUserDoc(user) {
   if (!snap.exists()) {
     await setDoc(userRef, {
       displayName: user.displayName || '',
-      email: user.email || '',
+      email: (user.email || '').toLowerCase(),
       photoURL: user.photoURL || '',
       createdAt: serverTimestamp(),
     })
@@ -64,4 +73,12 @@ export function updateDisplayName(user, displayName) {
 export async function getUserProfile(uid) {
   const snap = await getDoc(doc(db, 'users', uid))
   return snap.exists() ? { id: snap.id, ...snap.data() } : null
+}
+
+export async function findUserByEmail(email) {
+  const q = query(collection(db, 'users'), where('email', '==', email.trim().toLowerCase()))
+  const snap = await getDocs(q)
+  if (snap.empty) return null
+  const d = snap.docs[0]
+  return { id: d.id, ...d.data() }
 }

@@ -8,6 +8,7 @@ import {
   ShoppingBasket,
   ShoppingCart,
   Trash2,
+  Users,
 } from 'lucide-react'
 import ScreenHeader from '../components/layout/ScreenHeader'
 import {
@@ -21,6 +22,7 @@ import {
   Pill,
 } from '../components/ui'
 import { useAuth } from '../hooks/useAuth'
+import { useFrequentCollaborators } from '../hooks/useFrequentCollaborators'
 import { useLists } from '../hooks/useLists'
 import { useProducts } from '../hooks/useProducts'
 import { deleteList, joinListAsBuyer } from '../services/listsRepository'
@@ -33,6 +35,7 @@ export default function BuyerHome() {
   const { user } = useAuth()
   const { data: lists, loading } = useLists(user?.uid, 'buyer')
   const { data: products } = useProducts()
+  const { data: frequentCollaborators } = useFrequentCollaborators(user?.uid)
   const [modalOpen, setModalOpen] = useState(false)
   const [importModalOpen, setImportModalOpen] = useState(false)
   const [listIdDraft, setListIdDraft] = useState('')
@@ -95,6 +98,15 @@ export default function BuyerHome() {
               title="Importar lista"
             >
               <Download size={22} />
+            </button>
+            <button
+              type="button"
+              className="screen-header__icon-btn screen-header__icon-btn--ghost"
+              onClick={() => navigate('/collaborators')}
+              aria-label="Colaboradores habituales"
+              title="Colaboradores habituales"
+            >
+              <Users size={22} />
             </button>
             <button
               type="button"
@@ -233,6 +245,7 @@ export default function BuyerHome() {
         onImported={(listId) => navigate(`/list/${listId}`)}
         products={products}
         role="buyer"
+        frequentCollaborators={frequentCollaborators}
       />
     </div>
   )

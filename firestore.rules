@@ -15,6 +15,10 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && request.auth.uid == uid;
+
+      match /frequentCollaborators/{collaboratorUid} {
+        allow read, write: if isSignedIn() && request.auth.uid == uid;
+      }
     }
 
     match /lists/{listId} {
@@ -45,7 +49,11 @@ service cloud.firestore {
     match /stalls/{stallId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.ownerUid == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.ownerUid == request.auth.uid;
+      // Los puestos son un catálogo compartido de facto (no por lista): el
+      // modo Organizar del comprador necesita reordenar/eliminar puestos
+      // creados por otros usuarios, por eso se relaja de owner-only a
+      // cualquier autenticado (mismo nivel que ya tenía "read").
+      allow update, delete: if isSignedIn();
     }
   }
 }

@@ -76,6 +76,23 @@
   cursor: pointer;
 }
 
+.collaborator-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.collaborator-checklist__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: none;
+  background: none;
+  border-radius: var(--radius-card-sm);
+  text-align: left;
+}
+
 .form-actions {
   display: flex;
   gap: var(--space-2);

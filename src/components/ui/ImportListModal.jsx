@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Upload } from 'lucide-react'
+import { CheckSquare, Square, Upload } from 'lucide-react'
 import Modal from './Modal'
+import Avatar from './Avatar'
 import { useAuth } from '../../hooks/useAuth'
 import { createList, deleteList } from '../../services/listsRepository'
 import { addItemsBatch } from '../../services/itemsRepository'
@@ -8,17 +9,34 @@ import { findOrCreateProduct } from '../../services/productsRepository'
 import { normalizeUnit } from '../../utils/units'
 import { parseImportPayload } from '../../utils/importList'
 
-export default function ImportListModal({ open, onClose, onImported, products, role = 'planner' }) {
+export default function ImportListModal({
+  open,
+  onClose,
+  onImported,
+  products,
+  role = 'planner',
+  frequentCollaborators = [],
+}) {
   const { user } = useAuth()
   const [text, setText] = useState('')
   const [importing, setImporting] = useState(false)
   const [error, setError] = useState('')
+  const [selectedCollaborators, setSelectedCollaborators] = useState([])
 
   function handleClose() {
     setText('')
     setError('')
     setImporting(false)
+    setSelectedCollaborators([])
     onClose?.()
+  }
+
+  function toggleCollaborator(collaborator) {
+    setSelectedCollaborators((prev) =>
+      prev.some((c) => c.uid === collaborator.uid)
+        ? prev.filter((c) => c.uid !== collaborator.uid)
+        : [...prev, collaborator],
+    )
   }
 
   async function handleFileChange(e) {
@@ -44,6 +62,7 @@ export default function ImportListModal({ open, onClose, onImported, products, r
           photoURL: user.photoURL || '',
         },
         role,
+        selectedCollaborators,
       )
 
       const knownProducts = [...products]
@@ -104,6 +123,33 @@ export default function ImportListModal({ open, onClose, onImported, products, r
         <p className="form-hint">
           Se importan cantidades y unidades; precios y estado de compra no se incluyen.
         </p>
+
+        {frequentCollaborators.length > 0 ? (
+          <div className="form-field">
+            <span className="form-label">Agregar colaboradores habituales</span>
+            <div className="collaborator-checklist">
+              {frequentCollaborators.map((c) => {
+                const checked = selectedCollaborators.some((s) => s.uid === c.uid)
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className="collaborator-checklist__row"
+                    onClick={() => toggleCollaborator(c)}
+                  >
+                    {checked ? (
+                      <CheckSquare size={20} className="item-row__check item-row__check--done" />
+                    ) : (
+                      <Square size={20} className="item-row__check" />
+                    )}
+                    <Avatar photoURL={c.photoURL} name={c.displayName} size={24} />
+                    <span className="list-card-meta">{c.displayName || c.email}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        ) : null}
 
         {error ? <p className="welcome-error">{error}</p> : null}
 

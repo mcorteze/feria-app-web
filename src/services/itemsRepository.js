@@ -76,3 +76,14 @@ export function markItemPending(listId, itemId) {
     paidPrice: null,
   })
 }
+
+export async function assignItemsToStall(listId, itemIds, stall) {
+  const batch = writeBatch(db)
+  for (const itemId of itemIds) {
+    batch.update(doc(db, 'lists', listId, 'items', itemId), {
+      stallId: stall?.id || null,
+      stallName: stall?.name || '',
+    })
+  }
+  await batch.commit()
+}
