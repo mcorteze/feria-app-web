@@ -10,7 +10,7 @@ import History from './screens/History'
 
 function App() {
   return (
-    <BrowserRouter basename="/feria-app-web">
+    <BrowserRouter>
       <AppLayout>
         <Routes>
           <Route path="/" element={<Welcome />} />

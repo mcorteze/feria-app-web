@@ -1,6 +1,7 @@
 import {
   getRedirectResult,
   onAuthStateChanged,
+  signInWithPopup,
   signInWithRedirect,
   signOut as firebaseSignOut,
   updateProfile,
@@ -25,13 +26,31 @@ async function ensureUserDoc(user) {
   }
 }
 
-// GitHub Pages sirve todo con Cross-Origin-Opener-Policy: same-origin, lo que
-// impide que el popup de signInWithPopup se comunique de vuelta con la página
-// principal (no hay forma de configurar esa cabecera en GitHub Pages). Se usa
-// siempre signInWithRedirect, que no depende de comunicación entre ventanas.
+const POPUP_FALLBACK_CODES = new Set([
+  'auth/popup-blocked',
+  'auth/popup-closed-by-user',
+  'auth/cancelled-popup-request',
+  'auth/operation-not-supported-in-this-environment',
+])
+
+// Netlify permite configurar Cross-Origin-Opener-Policy: unsafe-none
+// (netlify.toml), por eso el popup vuelve a ser viable — a diferencia de
+// GitHub Pages, que fuerza same-origin sin posibilidad de cambiarlo.
+// El popup evita por completo el problema de Bounce Tracking Protection
+// de Chrome, que purgaba el estado de firebaseapp.com durante el redirect.
 export async function signInWithGoogle() {
   await authReady
-  await signInWithRedirect(auth, googleProvider)
+  try {
+    const result = await signInWithPopup(auth, googleProvider)
+    await ensureUserDoc(result.user)
+    return result.user
+  } catch (err) {
+    if (POPUP_FALLBACK_CODES.has(err?.code)) {
+      await signInWithRedirect(auth, googleProvider)
+      return null
+    }
+    throw err
+  }
 }
 
 export async function consumeRedirectResult() {
