@@ -4,7 +4,6 @@ import { ChevronDown, ClipboardList, LogOut, ShoppingCart } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useProfileName } from '../hooks/useProfileName'
 import { signInWithGoogle, signOut } from '../services/authRepository'
-import { auth } from '../firebase/config'
 import { Avatar, HeroButton, LoadingState, Modal } from '../components/ui'
 import '../styles/screen.css'
 import './Welcome.css'
@@ -37,8 +36,9 @@ export default function Welcome() {
     try {
       await signInWithGoogle()
     } catch (err) {
-      // TEMPORAL — diagnóstico de auth/unauthorized-domain, quitar cuando se resuelva.
-      setError(`DEBUG: code=${err?.code || 'sin código'} | message=${err?.message || err} | host=${window.location.hostname} | authDomain=${auth.config.authDomain}`)
+      setError(err?.code === 'auth/network-request-failed'
+        ? 'Sin conexión. Revisa tu internet e intenta de nuevo.'
+        : 'No se pudo iniciar sesión. Intenta nuevamente.')
     } finally {
       setSigningIn(false)
     }
