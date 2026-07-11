@@ -36,7 +36,9 @@ export default function Welcome() {
     try {
       await signInWithGoogle()
     } catch (err) {
-      setError(`DEBUG: ${err?.code || 'sin código'} — ${err?.message || err}`)
+      setError(err?.code === 'auth/network-request-failed'
+        ? 'Sin conexión. Revisa tu internet e intenta de nuevo.'
+        : 'No se pudo iniciar sesión. Intenta nuevamente.')
     } finally {
       setSigningIn(false)
     }

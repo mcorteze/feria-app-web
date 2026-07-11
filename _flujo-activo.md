@@ -2,7 +2,7 @@
 Actualizado: 2026-07-10
 
 ## Tarea actual
-Login en móvil finalmente resuelto (causa raíz real: Firebase Hosting nunca desplegado). Rediseño visual + paleta ajustada + dropdown de perfil listos para publicar.
+Sitio migrado a Netlify (feria-app-web.netlify.app) + origen OAuth agregado en Google Cloud Console. Esperando confirmación del usuario de que el login ya funciona de forma estable.
 
 ## Decisiones tomadas esta sesión
 - [2026-07-10] Réplica web fiel de feria-app (React Native/Expo) en React + Firebase, mobile-first, "mismo flujo pero con mejoras en base a auditoría profunda" (petición explícita del usuario).
@@ -14,10 +14,11 @@ Login en móvil finalmente resuelto (causa raíz real: Firebase Hosting nunca de
 - [2026-07-10] Proyecto construido completo vía agente en background: tokens, servicios (repository pattern), hooks de dominio, componentes UI, 7 pantallas, `firestore.rules`. `npm run build` verificado limpio.
 
 ## Pendiente
-- [ ] Usuario debe confirmar que el login ya funciona de forma estable en su celular tras el deploy de Firebase Hosting
+- [ ] Usuario debe confirmar que el login ya funciona de forma estable en su celular tras agregar el origen OAuth en Google Cloud Console
 - [ ] Code-splitting del bundle de Firebase si el tamaño (~848KB) llega a ser un problema real (nota del agente constructor, no urgente)
 - [ ] Evaluar si conviene mostrar avatares de TODOS los colaboradores en History (hoy solo muestra nombre/total, sin grupo)
-- [ ] El placeholder de Firebase Hosting (`firebase-hosting-placeholder/`) es solo para activar el endpoint de Auth — no confundir con el sitio real (sigue siendo GitHub Pages). No borrarlo ni el deploy de Hosting sin entender que eso rompería el login otra vez.
+- [ ] Decidir si GitHub Pages (mcorteze.github.io/feria-app-web) se abandona del todo o se deja como espejo secundario — el sitio real ahora es Netlify (feria-app-web.netlify.app). El workflow de GitHub Actions ya se eliminó, pero el deploy viejo puede seguir sirviendo una versión desactualizada hasta que se borre manualmente en GitHub Pages settings si se quiere limpiar del todo.
+- [ ] El placeholder de Firebase Hosting (`firebase-hosting-placeholder/`) sigue siendo necesario — activa el endpoint `/__/firebase/init.json` que el SDK de Auth requiere sin importar en qué dominio viva la app real. No borrarlo.
 
 ## Contexto crítico (lo que no puede olvidarse)
 - El modelo de datos usa `collaborators: [{uid, role}]` por lista — NO reintroducir un `list_mode` global como tenía el original, fue un hallazgo de auditoría a corregir.
@@ -57,3 +58,10 @@ Login en móvil finalmente resuelto (causa raíz real: Firebase Hosting nunca de
   - Acento cambiado de `#3ddc97` (apagado) a `#6ee23f` (más saturado/vibrante, más cercano a la referencia)
   - Íconos aumentados en toda la app: header actions 20→22px, botones de acción secundaria 16→18px, buscador 18→19px; tap target circular de header 36→40px
   - Botón "Salir" (texto plano, sin confirmación) reemplazado por dropdown de perfil: click en avatar+nombre abre menú con "Cerrar sesión" (ícono `LogOut`), que ahora pide confirmación vía `Modal` antes de ejecutar `signOut()`. Cierra al hacer click afuera (listener `mousedown` con `menuRef`).
+
+- **El login seguía fallando pese al fix de Hosting** — nueva señal de Chrome en consola: "Chrome may soon delete state for intermediate websites in a recent navigation chain" apuntando a `feria-app-web.firebaseapp.com`. Esto es **Bounce Tracking Protection**: como el sitio y `firebaseapp.com` son dominios distintos y el usuario nunca "interactúa" directamente ahí (solo rebota durante `signInWithRedirect`), Chrome purga su estado a mitad del flujo — causa raíz real de por qué el redirect nunca completaba de forma confiable, sin importar los fixes anteriores (todos correctos pero insuficientes).
+  - GitHub Pages fuerza `Cross-Origin-Opener-Policy: same-origin` sin poder cambiarlo (no soporta cabeceras custom), lo que había obligado a usar `signInWithRedirect` en primer lugar (el popup no podía comunicarse de vuelta). Un intento de agregar `<meta http-equiv="Cross-Origin-Opener-Policy">` fue descartado: **COOP no se puede establecer vía meta tag en ningún navegador**, solo como cabecera HTTP real.
+  - **Solución**: migración completa de hosting de GitHub Pages a **Netlify** (`feria-app-web.netlify.app`), que sí permite cabeceras custom vía `netlify.toml`. Se estableció `Cross-Origin-Opener-Policy: unsafe-none` y se restauró `signInWithPopup` como método principal (con fallback a redirect solo si el popup es bloqueado) — el popup nunca navega la ventana fuera del sitio, por lo que Bounce Tracking Protection no aplica en absoluto. Cambios de infraestructura: se quitó el `base`/`basename` de subpath de Vite/Router (Netlify sirve en la raíz), se quitó `404.html` y el script de restauración de `index.html` (`netlify.toml` maneja el SPA fallback con `[[redirects]]`), se quitó el workflow de GitHub Actions.
+  - Verificado con `curl`: `Cross-Origin-Opener-Policy: unsafe-none` confirmado activo en `https://feria-app-web.netlify.app/`.
+  - **Aun con COOP correcto, el popup seguía fallando** con error "The requested action is invalid" (`auth/internal-error` o similar). Causa: Firebase Auth usa por debajo un **OAuth 2.0 Client ID de Google Cloud Console** con su propia lista separada de "Authorized JavaScript origins" — agregar el dominio en Firebase Console (Authentication → Authorized domains) NO alimenta esta lista automáticamente, son dos configuraciones independientes. Se encontró en **Google Cloud Console → APIs & Services → Credentials** (proyecto `feria-app-web`, no confundir con otros proyectos del usuario como `aloasesoriasexcel`) el "Web client (auto created by Google Service)", y se agregó `https://feria-app-web.netlify.app` a sus Authorized JavaScript origins. Los cambios de OAuth Client tardan unos minutos en propagar.
+  - **Nota de proceso**: el CLI de `firebase-tools` no puede autenticarse desde este entorno (Bash ni PowerShell) en ningún modo — ni `login` ni `login:ci` funcionan de forma no interactiva. Cualquier operación que requiera `firebase login` debe correrla el usuario en su propia terminal fuera de esta sesión.
