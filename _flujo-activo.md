@@ -2,7 +2,7 @@
 Actualizado: 2026-07-10
 
 ## Tarea actual
-Ninguna en curso. Fase 1 (construcción completa del proyecto) cerrada. Pendiente que el usuario decida cuándo avanzar a Fase 2 (conectar Firebase real).
+Rediseño visual completo aplicado (fondo oscuro, avatares, enfoque de grupo). Listo para publicar y que el usuario pruebe en su celular real.
 
 ## Decisiones tomadas esta sesión
 - [2026-07-10] Réplica web fiel de feria-app (React Native/Expo) en React + Firebase, mobile-first, "mismo flujo pero con mejoras en base a auditoría profunda" (petición explícita del usuario).
@@ -14,11 +14,10 @@ Ninguna en curso. Fase 1 (construcción completa del proyecto) cerrada. Pendient
 - [2026-07-10] Proyecto construido completo vía agente en background: tokens, servicios (repository pattern), hooks de dominio, componentes UI, 7 pantallas, `firestore.rules`. `npm run build` verificado limpio.
 
 ## Pendiente
-- [ ] Confirmar que el login con Google funciona en Chrome Android tras el cambio a BrowserRouter + 404.html (el usuario probará de nuevo)
-- [ ] Probar también en iPhone/Safari si aplica — no se ha probado ahí todavía
-- [ ] Probar el flujo end-to-end en https://mcorteze.github.io/feria-app-web/ (login Google, cargar catálogo inicial desde /products, crear lista, unirse como comprador)
-- [ ] Code-splitting del bundle de Firebase si el tamaño (~844KB) llega a ser un problema real (nota del agente constructor, no urgente)
-- [ ] Revisar visualmente fidelidad de diseño en navegador real (mobile viewport) comparando contra capturas del original si el usuario las tiene
+- [ ] Usuario debe probar el rediseño en su celular real y dar feedback (fondo oscuro, avatares, cards de guía, iconos nuevos)
+- [ ] Quitar el debug banner temporal si quedó algún resto (se agregó y luego se resolvió el bug de auth; verificar que Welcome.jsx no tenga texto "DEBUG:" visible)
+- [ ] Code-splitting del bundle de Firebase si el tamaño (~847KB) llega a ser un problema real (nota del agente constructor, no urgente)
+- [ ] Evaluar si conviene mostrar avatares de TODOS los colaboradores en History (hoy solo muestra nombre/total, sin grupo)
 
 ## Contexto crítico (lo que no puede olvidarse)
 - El modelo de datos usa `collaborators: [{uid, role}]` por lista — NO reintroducir un `list_mode` global como tenía el original, fue un hallazgo de auditoría a corregir.
@@ -42,4 +41,13 @@ Ninguna en curso. Fase 1 (construcción completa del proyecto) cerrada. Pendient
 - Bug de login en móvil, 3 iteraciones hasta la causa real:
   1. Popup se cerraba solo → cambio a `signInWithRedirect` en móvil (insuficiente)
   2. Redirect completaba pero sesión no persistía → se agregó `setPersistence(browserLocalPersistence)` (insuficiente)
-  3. **Causa raíz real**: `HashRouter` y el mecanismo de retorno de `signInWithRedirect` compiten por el mismo fragmento `#` de la URL — React Router limpiaba el hash de estado de Firebase antes de que el SDK pudiera leerlo. Fix: cambio a `BrowserRouter` con `basename="/feria-app-web"` + patrón estándar `404.html` de GitHub Pages (redirige codificando la ruta en `?redirect=`, `index.html` la restaura con `history.replaceState` antes de montar React). También se simplificó `signInWithGoogle`: intenta `signInWithPopup` siempre primero, cae a `signInWithRedirect` solo si el popup fue bloqueado/cerrado (por código de error), en vez de decidir por user-agent.
+  3. `HashRouter` y `signInWithRedirect` competían por el fragmento `#` de la URL → cambio a `BrowserRouter` + `basename` + patrón `404.html` de GitHub Pages
+  4. **Causa raíz final confirmada por consola del navegador**: GitHub Pages sirve todo con `Cross-Origin-Opener-Policy: same-origin` (no configurable ahí), lo que bloquea que `signInWithPopup` cierre su propio popup y se comunique de vuelta — la promesa quedaba colgada sin lanzar error capturable. Fix definitivo: se eliminó el popup por completo, `signInWithGoogle` usa siempre `signInWithRedirect`. **Confirmado funcionando en dispositivo Android real.**
+
+- Rediseño visual completo a pedido del usuario (fondo oscuro tipo "panel de entrenador", acento único vibrante `#3ddc97`, sin colores dulces, cero emojis):
+  - `tokens.css` reescrito de cero — paleta oscura, tipografía técnica, radios geométricos, sombras casi planas. Verificado con `comm` que no queda ningún token CSS huérfano en todo `src/`.
+  - `Welcome.jsx`: se quitó el copy de marketing ("Organiza tus compras..."), se agregó topbar con avatar de Google (componente `Avatar` nuevo, reutilizable) y nombre arriba-izquierda, botón "Salir". Se quitó el límite artificial de 10 caracteres en `useProfileName` (venía del original React Native, sin sentido en web con `displayName` real de Google).
+  - Navegación: botón "Cambiar" (texto) → ícono `ArrowLeftRight` con label accesible; ícono de catálogo `Tag` (poco intuitivo) → `ShoppingBasket`, en `PlannerHome` y `BuyerHome`.
+  - **Enfoque de grupo** (pedido explícito): `collaborators` ahora guarda también `photoURL` (antes solo uid/displayName/role) en `createList` y `joinListAsBuyer`. Nuevo componente `Avatar.jsx` reutilizable. `PlannerHome`/`BuyerHome` muestran stack de avatares + fecha de creación en cada card de lista (patrón `.avatar-stack` con superposición). `ActiveList` muestra barra de grupo bajo el header (avatares + colaboradores + fecha) y el modal de compartir ahora lista a cada colaborador con avatar, nombre y rol (Pill), no solo el código crudo.
+  - Nuevo componente `GuideCard.jsx` (patrón "card de notificación/guía"): usado en `PlannerHome` para avisar cuando el catálogo de productos está vacío (resuelve el problema de descubribilidad que reportó el usuario — `/products` existía pero nadie lo encontraba), con acción directa "Ir al catálogo" y opción de descartar (persistida en localStorage).
+  - Verificado: todas las pantallas ya tenían `onBack` correcto: solo faltaba que fuera descubrible, no que faltara la función.

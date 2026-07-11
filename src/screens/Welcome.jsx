@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { ClipboardList, ShoppingCart } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useProfileName } from '../hooks/useProfileName'
-import { signInWithGoogle } from '../services/authRepository'
-import { HeroButton, LoadingState } from '../components/ui'
+import { signInWithGoogle, signOut } from '../services/authRepository'
+import { Avatar, HeroButton, LoadingState } from '../components/ui'
 import '../styles/screen.css'
 import './Welcome.css'
 
@@ -22,7 +22,9 @@ export default function Welcome() {
     try {
       await signInWithGoogle()
     } catch (err) {
-      setError(`Login: ${err?.code || 'error'} — ${err?.message || err}`)
+      setError(err?.code === 'auth/network-request-failed'
+        ? 'Sin conexión. Revisa tu internet e intenta de nuevo.'
+        : 'No se pudo iniciar sesión. Intenta nuevamente.')
     } finally {
       setSigningIn(false)
     }
@@ -43,29 +45,34 @@ export default function Welcome() {
 
   return (
     <div className="screen">
-      <div className="screen-content welcome-content">
-        <div className="welcome-brand">
-          <h1 className="welcome-title">Feria App</h1>
-          <p className="welcome-subtitle">
-            Organiza tus compras de feria en tiempo real, en equipo.
-          </p>
-        </div>
+      {user ? (
+        <header className="welcome-topbar">
+          <Avatar photoURL={user.photoURL} name={name || user.displayName} size={32} />
+          <span className="welcome-topbar__name">{name || user.displayName}</span>
+          <button type="button" className="welcome-signout" onClick={() => signOut()}>
+            Salir
+          </button>
+        </header>
+      ) : null}
 
+      <div className="screen-content welcome-content">
         {!user ? (
-          <div className="welcome-auth">
-            <p style={{ fontSize: 11, wordBreak: 'break-all', opacity: 0.6 }}>
-              DEBUG: {window.location.href}
-            </p>
-            {(error || authError) ? <p className="welcome-error">{error || authError}</p> : null}
-            <button
-              type="button"
-              className="welcome-google-btn"
-              onClick={handleSignIn}
-              disabled={signingIn}
-            >
-              {signingIn ? 'Conectando...' : 'Iniciar sesión con Google'}
-            </button>
-          </div>
+          <>
+            <div className="welcome-brand">
+              <h1 className="welcome-title">Feria App</h1>
+            </div>
+            <div className="welcome-auth">
+              {(error || authError) ? <p className="welcome-error">{error || authError}</p> : null}
+              <button
+                type="button"
+                className="welcome-google-btn"
+                onClick={handleSignIn}
+                disabled={signingIn}
+              >
+                {signingIn ? 'Conectando...' : 'Iniciar sesión con Google'}
+              </button>
+            </div>
+          </>
         ) : !name ? (
           <form className="welcome-auth" onSubmit={handleSaveName}>
             <div className="form-field">
@@ -75,10 +82,8 @@ export default function Welcome() {
               <input
                 id="displayName"
                 className="form-input"
-                maxLength={10}
                 value={nameDraft}
                 onChange={(e) => setNameDraft(e.target.value)}
-                placeholder="Máx. 10 caracteres"
                 autoFocus
               />
             </div>
@@ -88,7 +93,6 @@ export default function Welcome() {
           </form>
         ) : (
           <div className="welcome-roles">
-            <p className="welcome-greeting">Hola, {name}</p>
             <HeroButton
               icon={ClipboardList}
               label="Planificador"
@@ -101,6 +105,9 @@ export default function Welcome() {
               variant="buyer"
               onClick={() => navigate('/buyer')}
             />
+            <p className="welcome-hint">
+              Planificador arma la lista. Comprador la lleva a la feria.
+            </p>
           </div>
         )}
       </div>

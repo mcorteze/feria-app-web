@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import ScreenHeader from '../components/layout/ScreenHeader'
 import {
+  Avatar,
   EmptyState,
   FAB,
   LoadingState,
@@ -31,7 +32,7 @@ import {
   markItemBought,
   updateItem,
 } from '../services/itemsRepository'
-import { formatCurrency } from '../utils/format'
+import { formatCurrency, formatDateTime } from '../utils/format'
 import '../styles/screen.css'
 import './ActiveList.css'
 
@@ -171,6 +172,17 @@ export default function ActiveList() {
           </>
         }
       />
+
+      <div className="active-list-group-bar">
+        <span className="avatar-stack">
+          {(list.collaborators || []).map((c) => (
+            <Avatar key={c.uid} photoURL={c.photoURL} name={c.displayName} size={24} />
+          ))}
+        </span>
+        <span className="active-list-group-bar__meta">
+          {(list.collaborators || []).length} colaborador(es) · {formatDateTime(list.createdAt)}
+        </span>
+      </div>
 
       <div className="screen-content">
         {isReadOnly ? (
@@ -312,6 +324,22 @@ export default function ActiveList() {
           "Unirse a Lista" desde su perfil de Comprador.
         </p>
         <div className="share-code">{listId}</div>
+
+        <div className="share-group">
+          <span className="form-label">En este grupo</span>
+          <div className="share-group__list">
+            {(list.collaborators || []).map((c) => (
+              <div key={c.uid} className="share-group__row">
+                <Avatar photoURL={c.photoURL} name={c.displayName} size={26} />
+                <span className="share-group__name">{c.displayName || 'Sin nombre'}</span>
+                <Pill variant={c.role === 'planner' ? 'success' : 'info'}>
+                  {c.role === 'planner' ? 'Planificador' : 'Comprador'}
+                </Pill>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <button
           type="button"
           className="btn btn-primary"

@@ -15,7 +15,7 @@
   height: 64px;
   border-radius: 50%;
   background: var(--color-bg);
-  color: var(--color-text-secondary-alt);
+  color: var(--color-text-secondary);
   margin-bottom: var(--space-2);
 }
 
@@ -38,8 +38,8 @@
   padding: var(--space-2) var(--space-4);
   border: none;
   border-radius: var(--radius-pill);
-  background: var(--color-brand-bg);
-  color: var(--color-brand);
+  background: var(--color-accent-bg);
+  color: var(--color-accent);
   font-weight: 700;
   font-size: var(--font-size-secondary);
 }

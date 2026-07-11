@@ -72,7 +72,12 @@ export async function createList(name, owner) {
     createdAt: serverTimestamp(),
     totalSpent: 0,
     collaborators: [
-      { uid: owner.uid, displayName: owner.displayName || '', role: 'planner' },
+      {
+        uid: owner.uid,
+        displayName: owner.displayName || '',
+        photoURL: owner.photoURL || '',
+        role: 'planner',
+      },
     ],
     collaboratorUids: [owner.uid],
   })
@@ -109,6 +114,7 @@ export async function joinListAsBuyer(listId, user) {
     collaborators: arrayUnion({
       uid: user.uid,
       displayName: user.displayName || '',
+      photoURL: user.photoURL || '',
       role: 'buyer',
     }),
     collaboratorUids: arrayUnion(user.uid),

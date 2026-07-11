@@ -45,7 +45,7 @@
 }
 
 .form-input:focus {
-  border-color: var(--color-brand);
+  border-color: var(--color-accent);
 }
 
 .form-actions {
@@ -64,8 +64,8 @@
 }
 
 .btn-primary {
-  background: var(--color-brand);
-  color: var(--color-text-on-brand);
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
 }
 
 .btn-secondary {

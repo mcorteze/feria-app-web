@@ -8,7 +8,7 @@
   padding: var(--space-5) var(--space-4);
   border: none;
   border-radius: var(--radius-hero);
-  color: var(--color-text-on-brand);
+  color: var(--color-text-on-accent);
   font-family: var(--font-sans);
   transition: filter 0.15s ease;
 }
@@ -18,7 +18,7 @@
 }
 
 .hero-button--brand {
-  background: var(--color-brand);
+  background: var(--color-accent);
   box-shadow: var(--shadow-hero-brand);
 }
 

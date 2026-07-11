@@ -67,7 +67,7 @@
 }
 
 .chip--active {
-  background: var(--color-brand-bg);
-  border-color: var(--color-brand);
-  color: var(--color-brand);
+  background: var(--color-accent-bg);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }

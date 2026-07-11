@@ -6,8 +6,8 @@
   height: 56px;
   border-radius: var(--radius-fab);
   border: none;
-  background: var(--color-brand);
-  color: var(--color-text-on-brand);
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
   display: flex;
   align-items: center;
   justify-content: center;

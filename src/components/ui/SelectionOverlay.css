@@ -18,9 +18,9 @@
 }
 
 .selection-overlay-cell--active {
-  background: var(--color-brand);
-  border-color: var(--color-brand);
-  color: var(--color-text-on-brand);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text-on-accent);
 }
 
 .selection-overlay-list {
@@ -42,7 +42,7 @@
 }
 
 .selection-overlay-row--active {
-  background: var(--color-brand-bg);
-  border-color: var(--color-brand);
-  color: var(--color-brand);
+  background: var(--color-accent-bg);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }

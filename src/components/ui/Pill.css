@@ -11,14 +11,13 @@
 }
 
 .ui-pill--success {
-  background: var(--color-brand-bg);
-  color: var(--color-brand);
+  background: var(--color-accent-bg);
+  color: var(--color-accent);
 }
 
 .ui-pill--pending {
-  background: var(--color-amber-bg);
-  color: var(--color-amber);
-  border: 1px solid var(--color-amber-border);
+  background: var(--color-pending-bg);
+  color: var(--color-pending);
 }
 
 .ui-pill--neutral {
@@ -33,6 +32,6 @@
 }
 
 .ui-pill--info {
-  background: var(--color-accent-blue-bg);
-  color: var(--color-accent-blue);
+  background: var(--color-accent-bg);
+  color: var(--color-accent);
 }

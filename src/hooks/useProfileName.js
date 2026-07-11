@@ -9,15 +9,14 @@ export function useProfileName(user) {
 
   useEffect(() => {
     if (!name && user?.displayName) {
-      const initial = user.displayName.slice(0, 10)
-      setName(initial)
-      localStorage.setItem(STORAGE_KEY, initial)
+      setName(user.displayName)
+      localStorage.setItem(STORAGE_KEY, user.displayName)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   function saveName(value) {
-    const trimmed = value.slice(0, 10)
+    const trimmed = value.trim()
     setName(trimmed)
     localStorage.setItem(STORAGE_KEY, trimmed)
   }

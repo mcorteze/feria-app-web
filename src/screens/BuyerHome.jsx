@@ -1,11 +1,19 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { History as HistoryIcon, ShoppingBag, ShoppingCart, Tag, Trash2 } from 'lucide-react'
+import {
+  ArrowLeftRight,
+  History as HistoryIcon,
+  ShoppingBag,
+  ShoppingBasket,
+  ShoppingCart,
+  Trash2,
+} from 'lucide-react'
 import ScreenHeader from '../components/layout/ScreenHeader'
-import { Card, EmptyState, HeroButton, LoadingState, Modal, Pill } from '../components/ui'
+import { Avatar, Card, EmptyState, HeroButton, LoadingState, Modal, Pill } from '../components/ui'
 import { useAuth } from '../hooks/useAuth'
 import { useLists } from '../hooks/useLists'
 import { deleteList, joinListAsBuyer } from '../services/listsRepository'
+import { formatDateTime } from '../utils/format'
 import '../styles/screen.css'
 import '../styles/listCard.css'
 
@@ -52,14 +60,16 @@ export default function BuyerHome() {
               className="screen-header__icon-btn screen-header__icon-btn--ghost"
               onClick={() => navigate('/products')}
               aria-label="Catálogo de productos"
+              title="Catálogo de productos"
             >
-              <Tag size={20} />
+              <ShoppingBasket size={20} />
             </button>
             <button
               type="button"
               className="screen-header__icon-btn screen-header__icon-btn--ghost"
               onClick={() => navigate('/history')}
-              aria-label="Historial"
+              aria-label="Historial de compras"
+              title="Historial"
             >
               <HistoryIcon size={20} />
             </button>
@@ -67,9 +77,10 @@ export default function BuyerHome() {
               type="button"
               className="screen-header__icon-btn screen-header__icon-btn--ghost"
               onClick={() => navigate('/')}
-              aria-label="Cambiar perfil"
+              aria-label="Cambiar de rol"
+              title="Cambiar de rol"
             >
-              Cambiar
+              <ArrowLeftRight size={20} />
             </button>
           </>
         }
@@ -112,8 +123,15 @@ export default function BuyerHome() {
                     </Pill>
                   </div>
                   <div className="list-card-row">
-                    <span className="list-card-meta">
-                      {planner ? `Creada por ${planner.displayName || 'planificador'}` : ''}
+                    <span className="list-card-creator">
+                      <Avatar
+                        photoURL={planner?.photoURL}
+                        name={planner?.displayName}
+                        size={20}
+                      />
+                      <span className="list-card-meta">
+                        {planner?.displayName || 'Planificador'} · {formatDateTime(list.createdAt)}
+                      </span>
                     </span>
                     <button
                       type="button"
