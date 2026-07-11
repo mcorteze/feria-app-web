@@ -4,6 +4,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  increment,
   onSnapshot,
   orderBy,
   query,
@@ -36,9 +37,16 @@ export async function createProduct(product, ownerUid) {
       : [],
     stallId: product.stallId || null,
     stallName: product.stallName || '',
+    useCount: 0,
     ownerUid,
   })
   return docRef.id
+}
+
+export function recordProductUse(productId) {
+  return updateDoc(doc(db, 'products', productId), {
+    useCount: increment(1),
+  })
 }
 
 export async function findOrCreateProduct(name, defaultUnit, existingProducts, ownerUid) {
@@ -78,6 +86,7 @@ export async function seedProducts(products, ownerUid) {
       priceHistory: [],
       stallId: null,
       stallName: '',
+      useCount: 0,
       ownerUid,
     })
   }

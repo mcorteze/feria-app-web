@@ -1,0 +1,37 @@
+.account-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.account-profile__name {
+  font-size: var(--font-size-subtitle-sm);
+  font-weight: var(--font-weight-subtitle);
+  color: var(--color-text-primary);
+}
+
+.account-menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.account-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius-card-sm);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-card-sm);
+  font-weight: 600;
+  text-align: left;
+}
+
+.account-menu__item--danger {
+  color: var(--color-danger-strong);
+}

@@ -9,6 +9,8 @@ import {
   CheckCircle2,
   Edit2,
   Layers,
+  MessageSquare,
+  SearchX,
   Share2,
   Square,
   Trash2,
@@ -37,6 +39,7 @@ import {
   assignItemsToStall,
   deleteItem,
   markItemBought,
+  markItemNotFound,
   updateItem,
 } from '../services/itemsRepository'
 import {
@@ -159,18 +162,28 @@ export default function ActiveList() {
     await deleteItem(listId, itemId)
   }
 
-  async function handleConfirmBuy(quantity, paidPrice) {
-    if (!buyItem) return
-    await markItemBought(listId, buyItem.id, { quantity, paidPrice })
-    const remaining = items.filter((i) => i.id !== buyItem.id && !i.isBought)
+  async function checkAllResolvedAndComplete(excludeId, extraPaid) {
+    const remaining = items.filter((i) => i.id !== excludeId && !i.isBought)
     if (remaining.length === 0) {
       const total =
         items
-          .filter((i) => i.id !== buyItem.id)
-          .reduce((sum, i) => sum + (Number(i.paidPrice) || 0), 0) +
-        Number(paidPrice || 0)
+          .filter((i) => i.id !== excludeId)
+          .reduce((sum, i) => sum + (Number(i.paidPrice) || 0), 0) + Number(extraPaid || 0)
       await completeList(listId, total)
     }
+  }
+
+  async function handleConfirmBuy(quantity, paidPrice) {
+    if (!buyItem) return
+    await markItemBought(listId, buyItem.id, { quantity, paidPrice })
+    await checkAllResolvedAndComplete(buyItem.id, paidPrice)
+    setBuyItem(null)
+  }
+
+  async function handleConfirmNotFound(comment) {
+    if (!buyItem) return
+    await markItemNotFound(listId, buyItem.id, comment)
+    await checkAllResolvedAndComplete(buyItem.id, 0)
     setBuyItem(null)
   }
 
@@ -338,7 +351,7 @@ export default function ActiveList() {
                     <button
                       key={item.id}
                       type="button"
-                      className={`item-row ${item.isBought ? 'item-row--bought' : ''} ${buyItem?.id === item.id ? 'item-row--active' : ''}`}
+                      className={`item-row ${item.isBought ? 'item-row--bought' : ''} ${item.notFound ? 'item-row--not-found' : ''} ${buyItem?.id === item.id ? 'item-row--active' : ''}`}
                       onClick={() =>
                         isOrganizing ? toggleSelection(item.id) : !item.isBought && setBuyItem(item)
                       }
@@ -349,6 +362,8 @@ export default function ActiveList() {
                         ) : (
                           <Square size={22} className="item-row__check" />
                         )
+                      ) : item.notFound ? (
+                        <SearchX size={22} className="item-row__check item-row__check--not-found" />
                       ) : item.isBought ? (
                         <CheckCircle2 size={22} className="item-row__check item-row__check--done" />
                       ) : (
@@ -358,10 +373,17 @@ export default function ActiveList() {
                         <span className="item-row__name">{item.productName}</span>
                         <span className="item-row__meta">
                           {item.quantity} {item.unit}
-                          {item.isBought && item.paidPrice != null
-                            ? ` · ${formatCurrency(item.paidPrice)}`
-                            : ''}
+                          {item.notFound
+                            ? ' · No encontrado'
+                            : item.isBought && item.paidPrice != null
+                              ? ` · ${formatCurrency(item.paidPrice)}`
+                              : ''}
                         </span>
+                        {item.comment ? (
+                          <Pill variant="info" icon={MessageSquare}>
+                            {item.comment}
+                          </Pill>
+                        ) : null}
                       </span>
                     </button>
                   ))}
@@ -380,7 +402,9 @@ export default function ActiveList() {
                     {item.estimatedPrice ? ` · ${formatCurrency(item.estimatedPrice)}` : ''}
                   </span>
                   {item.comment ? (
-                    <span className="item-row__comment">{item.comment}</span>
+                    <Pill variant="info" icon={MessageSquare}>
+                      {item.comment}
+                    </Pill>
                   ) : null}
                 </span>
                 {isPlanningMode ? (
@@ -496,7 +520,12 @@ export default function ActiveList() {
         </div>
       </Modal>
 
-      <BuyItemModal item={buyItem} onClose={() => setBuyItem(null)} onConfirm={handleConfirmBuy} />
+      <BuyItemModal
+        item={buyItem}
+        onClose={() => setBuyItem(null)}
+        onConfirm={handleConfirmBuy}
+        onNotFound={handleConfirmNotFound}
+      />
 
       <EditItemModal
         item={editItem}
@@ -511,15 +540,19 @@ export default function ActiveList() {
   )
 }
 
-function BuyItemModal({ item, onClose, onConfirm }) {
+function BuyItemModal({ item, onClose, onConfirm, onNotFound }) {
   const [quantity, setQuantity] = useState(1)
   const [paidPrice, setPaidPrice] = useState('')
   const [quantityOverlayOpen, setQuantityOverlayOpen] = useState(false)
+  const [notFoundMode, setNotFoundMode] = useState(false)
+  const [notFoundComment, setNotFoundComment] = useState('')
 
   useEffect(() => {
     if (item) {
       setQuantity(item.quantity || 1)
       setPaidPrice(item.estimatedPrice ? String(item.estimatedPrice) : '')
+      setNotFoundMode(false)
+      setNotFoundComment('')
     }
   }, [item])
 
@@ -527,43 +560,82 @@ function BuyItemModal({ item, onClose, onConfirm }) {
 
   return (
     <Modal open={Boolean(item)} onClose={onClose} title={`Comprar: ${item.productName}`}>
-      <div className="form-field">
-        <span className="form-label">Cantidad</span>
-        <button
-          type="button"
-          className="form-input selection-trigger"
-          onClick={() => setQuantityOverlayOpen(true)}
-        >
-          {quantity} {item.unit}
-        </button>
-      </div>
-      <div className="form-field">
-        <label className="form-label" htmlFor="paid-price">
-          Precio pagado
-        </label>
-        <input
-          id="paid-price"
-          className="form-input"
-          type="number"
-          min="0"
-          inputMode="numeric"
-          value={paidPrice}
-          onChange={(e) => setPaidPrice(e.target.value)}
-          autoFocus
-        />
-      </div>
-      <div className="form-actions">
-        <button type="button" className="btn btn-secondary" onClick={onClose}>
-          Cancelar
-        </button>
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => onConfirm(quantity, Number(paidPrice) || 0)}
-        >
-          <Check size={18} /> Confirmar
-        </button>
-      </div>
+      {notFoundMode ? (
+        <>
+          <div className="form-field">
+            <label className="form-label" htmlFor="not-found-comment">
+              ¿Por qué no lo encontraste? (opcional)
+            </label>
+            <input
+              id="not-found-comment"
+              className="form-input"
+              value={notFoundComment}
+              onChange={(e) => setNotFoundComment(e.target.value)}
+              placeholder="Ej: no había en el puesto habitual"
+              autoFocus
+            />
+          </div>
+          <div className="form-actions">
+            <button type="button" className="btn btn-secondary" onClick={() => setNotFoundMode(false)}>
+              Volver
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={() => onNotFound(notFoundComment.trim())}
+            >
+              <SearchX size={18} /> Marcar no encontrado
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="form-field">
+            <span className="form-label">Cantidad</span>
+            <button
+              type="button"
+              className="form-input selection-trigger"
+              onClick={() => setQuantityOverlayOpen(true)}
+            >
+              {quantity} {item.unit}
+            </button>
+          </div>
+          <div className="form-field">
+            <label className="form-label" htmlFor="paid-price">
+              Precio pagado
+            </label>
+            <input
+              id="paid-price"
+              className="form-input"
+              type="number"
+              min="0"
+              inputMode="numeric"
+              value={paidPrice}
+              onChange={(e) => setPaidPrice(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <div className="form-actions">
+            <button type="button" className="btn btn-secondary" onClick={onClose}>
+              Cancelar
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => onConfirm(quantity, Number(paidPrice) || 0)}
+            >
+              <Check size={18} /> Confirmar
+            </button>
+          </div>
+          <button
+            type="button"
+            className="not-found-trigger"
+            onClick={() => setNotFoundMode(true)}
+          >
+            <SearchX size={16} /> No lo encontré
+          </button>
+        </>
+      )}
       <QuantityOverlay
         open={quantityOverlayOpen}
         value={quantity}

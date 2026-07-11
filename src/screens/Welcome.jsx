@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ClipboardList, LogOut, ShoppingCart } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useProfileName } from '../hooks/useProfileName'
-import { signInWithGoogle, signOut } from '../services/authRepository'
-import { Avatar, HeroButton, LoadingState, Modal } from '../components/ui'
+import { signInWithGoogle } from '../services/authRepository'
+import { LoadingState } from '../components/ui'
 import '../styles/screen.css'
 import './Welcome.css'
 
@@ -15,20 +14,10 @@ export default function Welcome() {
   const [nameDraft, setNameDraft] = useState('')
   const [signingIn, setSigningIn] = useState(false)
   const [error, setError] = useState('')
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [signOutConfirmOpen, setSignOutConfirmOpen] = useState(false)
-  const menuRef = useRef(null)
 
   useEffect(() => {
-    if (!menuOpen) return
-    function handleClickOutside(e) {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [menuOpen])
+    if (user && name) navigate('/home', { replace: true })
+  }, [user, name, navigate])
 
   async function handleSignIn() {
     setError('')
@@ -59,67 +48,6 @@ export default function Welcome() {
 
   return (
     <div className="screen">
-      {user ? (
-        <header className="welcome-topbar">
-          <div className="welcome-profile" ref={menuRef}>
-            <button
-              type="button"
-              className="welcome-profile__trigger"
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-expanded={menuOpen}
-              aria-haspopup="menu"
-              aria-label="Menú de perfil"
-            >
-              <Avatar photoURL={user.photoURL} name={name || user.displayName} size={36} />
-            </button>
-
-            {menuOpen ? (
-              <div className="welcome-profile__menu" role="menu">
-                <button
-                  type="button"
-                  className="welcome-profile__menu-item welcome-profile__menu-item--danger"
-                  role="menuitem"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    setSignOutConfirmOpen(true)
-                  }}
-                >
-                  <LogOut size={18} />
-                  Cerrar sesión
-                </button>
-              </div>
-            ) : null}
-          </div>
-        </header>
-      ) : null}
-
-      <Modal
-        open={signOutConfirmOpen}
-        onClose={() => setSignOutConfirmOpen(false)}
-        title="Cerrar sesión"
-      >
-        <p>¿Seguro que quieres cerrar sesión?</p>
-        <div className="form-actions">
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => setSignOutConfirmOpen(false)}
-          >
-            Cancelar
-          </button>
-          <button
-            type="button"
-            className="btn btn-danger"
-            onClick={() => {
-              setSignOutConfirmOpen(false)
-              signOut()
-            }}
-          >
-            Cerrar sesión
-          </button>
-        </div>
-      </Modal>
-
       <div className="screen-content welcome-content">
         {!user ? (
           <>
@@ -138,7 +66,7 @@ export default function Welcome() {
               </button>
             </div>
           </>
-        ) : !name ? (
+        ) : (
           <>
             <div className="welcome-brand">
               <h1 className="welcome-title">Feria App</h1>
@@ -160,30 +88,6 @@ export default function Welcome() {
                 Continuar
               </button>
             </form>
-          </>
-        ) : (
-          <>
-            <div className="welcome-brand">
-              <p className="welcome-brand__label">Feria App</p>
-              <h1 className="welcome-greeting">Hola, {name}</h1>
-            </div>
-            <div className="welcome-roles">
-              <HeroButton
-                icon={ClipboardList}
-                label="Planificador"
-                variant="brand"
-                onClick={() => navigate('/planner')}
-              />
-              <HeroButton
-                icon={ShoppingCart}
-                label="Comprador"
-                variant="buyer"
-                onClick={() => navigate('/buyer')}
-              />
-              <p className="welcome-hint">
-                Planificador arma la lista. Comprador la lleva a la feria.
-              </p>
-            </div>
           </>
         )}
       </div>

@@ -1,15 +1,11 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
-  ArrowLeftRight,
   CheckSquare,
   ClipboardList,
-  Download,
-  History as HistoryIcon,
   Plus,
   ShoppingBasket,
   Square,
-  Users,
 } from 'lucide-react'
 import ScreenHeader from '../components/layout/ScreenHeader'
 import {
@@ -18,7 +14,6 @@ import {
   EmptyState,
   GuideCard,
   HeroButton,
-  ImportListModal,
   LoadingState,
   Modal,
   Pill,
@@ -29,6 +24,7 @@ import { useLists } from '../hooks/useLists'
 import { useProducts } from '../hooks/useProducts'
 import { createList } from '../services/listsRepository'
 import { formatDateTime, formatShortDate } from '../utils/format'
+import { setLastRole } from '../utils/lastRole'
 import '../styles/screen.css'
 import '../styles/listCard.css'
 
@@ -36,18 +32,22 @@ const CATALOG_HINT_DISMISSED_KEY = 'feria-app:catalogHintDismissed'
 
 export default function PlannerHome() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
   const { data: lists, loading } = useLists(user?.uid, 'planner')
   const { data: products, loading: productsLoading } = useProducts()
   const { data: frequentCollaborators } = useFrequentCollaborators(user?.uid)
   const [modalOpen, setModalOpen] = useState(false)
-  const [importModalOpen, setImportModalOpen] = useState(false)
   const [nameDraft, setNameDraft] = useState('')
   const [selectedCollaborators, setSelectedCollaborators] = useState([])
   const [creating, setCreating] = useState(false)
   const [hintDismissed, setHintDismissed] = useState(
     () => localStorage.getItem(CATALOG_HINT_DISMISSED_KEY) === '1',
   )
+
+  useEffect(() => {
+    setLastRole('planner')
+  }, [])
 
   function dismissHint() {
     localStorage.setItem(CATALOG_HINT_DISMISSED_KEY, '1')
@@ -62,6 +62,14 @@ export default function PlannerHome() {
     setSelectedCollaborators([])
     setModalOpen(true)
   }
+
+  useEffect(() => {
+    if (location.state?.openCreate) {
+      openModal()
+      navigate(location.pathname, { replace: true, state: null })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.state])
 
   function toggleCollaborator(collaborator) {
     setSelectedCollaborators((prev) =>
@@ -95,59 +103,7 @@ export default function PlannerHome() {
 
   return (
     <div className="screen">
-      <ScreenHeader
-        title="Planificador"
-        onBack={() => navigate('/')}
-        actions={
-          <>
-            <button
-              type="button"
-              className="screen-header__icon-btn screen-header__icon-btn--ghost"
-              onClick={() => navigate('/products')}
-              aria-label="Catálogo de productos"
-              title="Catálogo de productos"
-            >
-              <ShoppingBasket size={22} />
-            </button>
-            <button
-              type="button"
-              className="screen-header__icon-btn screen-header__icon-btn--ghost"
-              onClick={() => navigate('/history')}
-              aria-label="Historial de compras"
-              title="Historial"
-            >
-              <HistoryIcon size={22} />
-            </button>
-            <button
-              type="button"
-              className="screen-header__icon-btn screen-header__icon-btn--ghost"
-              onClick={() => setImportModalOpen(true)}
-              aria-label="Importar lista desde JSON"
-              title="Importar lista"
-            >
-              <Download size={22} />
-            </button>
-            <button
-              type="button"
-              className="screen-header__icon-btn screen-header__icon-btn--ghost"
-              onClick={() => navigate('/collaborators')}
-              aria-label="Colaboradores habituales"
-              title="Colaboradores habituales"
-            >
-              <Users size={22} />
-            </button>
-            <button
-              type="button"
-              className="screen-header__icon-btn screen-header__icon-btn--ghost"
-              onClick={() => navigate('/')}
-              aria-label="Cambiar de rol"
-              title="Cambiar de rol"
-            >
-              <ArrowLeftRight size={22} />
-            </button>
-          </>
-        }
-      />
+      <ScreenHeader title="Planificador" onBack={() => navigate('/home')} />
 
       <div className="screen-content">
         {showCatalogHint ? (
@@ -257,14 +213,6 @@ export default function PlannerHome() {
           </div>
         </form>
       </Modal>
-
-      <ImportListModal
-        open={importModalOpen}
-        onClose={() => setImportModalOpen(false)}
-        onImported={(listId) => navigate(`/list/${listId}`)}
-        products={products}
-        frequentCollaborators={frequentCollaborators}
-      />
     </div>
   )
 }

@@ -70,9 +70,56 @@
   color: var(--color-text-primary);
 }
 
+.product-pick-row__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
 .product-pick-row__price {
   font-size: var(--font-size-secondary);
   color: var(--color-text-secondary);
+}
+
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.suggestions .screen-section-title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.suggestions__row {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.suggestion-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-mid);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-secondary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.suggestion-chip:active {
+  background: var(--color-accent-bg);
+  border-color: var(--color-accent);
+  color: var(--color-accent-strong);
 }
 
 .product-pick-row__form {

@@ -5,16 +5,18 @@
   --color-surface-raised: #ffffff;
   --color-surface-sunken: #efe8d8;
 
-  /* Acento único — verde bosque/oliva, cálido y contenido en vez de ácido */
-  --color-accent: #2f6b3e;
-  --color-accent-strong: #24532f;
-  --color-accent-bg: rgba(47, 107, 62, 0.12);
-  --color-accent-shadow: rgba(47, 107, 62, 0.28);
+  /* Acento único — verde bosque vivo, cálido pero con energía suficiente
+     para funcionar como color de acción principal sobre el fondo crema */
+  --color-accent: #3d8b4f;
+  --color-accent-strong: #2f6f3e;
+  --color-accent-bg: rgba(61, 139, 79, 0.13);
+  --color-accent-shadow: rgba(61, 139, 79, 0.32);
 
-  /* Rol comprador — variante fría del mismo sistema, no un color nuevo */
-  --color-buyer: #4a7fb0;
-  --color-buyer-bg: rgba(74, 127, 176, 0.12);
-  --color-buyer-shadow: rgba(74, 127, 176, 0.26);
+  /* Rol comprador — variante fría del mismo sistema, con el mismo nivel
+     de energía que el acento verde para no sentirse "apagada" al lado */
+  --color-buyer: #3d7dc2;
+  --color-buyer-bg: rgba(61, 125, 194, 0.13);
+  --color-buyer-shadow: rgba(61, 125, 194, 0.3);
 
   /* Semántico: éxito / pendiente / peligro — tonos pastel suaves */
   --color-success: #4d8b5a;

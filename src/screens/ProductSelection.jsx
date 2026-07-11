@@ -1,24 +1,40 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Plus, Search } from 'lucide-react'
+import { Check, Plus, Search, Sparkles } from 'lucide-react'
 import ScreenHeader from '../components/layout/ScreenHeader'
-import { Card, EmptyState, LoadingState, QuantityOverlay, UnitOverlay } from '../components/ui'
+import { Card, EmptyState, LoadingState, Pill, QuantityOverlay, UnitOverlay } from '../components/ui'
 import { useProducts } from '../hooks/useProducts'
-import { createProduct } from '../services/productsRepository'
+import { useListItems } from '../hooks/useListItems'
+import { createProduct, recordProductUse } from '../services/productsRepository'
 import { addItem } from '../services/itemsRepository'
 import { useAuth } from '../hooks/useAuth'
 import { formatCurrency } from '../utils/format'
 import '../styles/screen.css'
 import './ProductSelection.css'
 
+const SUGGESTIONS_LIMIT = 8
+
 export default function ProductSelection() {
   const { listId } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
   const { data: products, loading } = useProducts()
+  const { data: listItems } = useListItems(listId)
   const [search, setSearch] = useState('')
   const [expandedId, setExpandedId] = useState(null)
   const [saving, setSaving] = useState(false)
+
+  const addedProductIds = useMemo(
+    () => new Set(listItems.map((i) => i.productId).filter(Boolean)),
+    [listItems],
+  )
+
+  const suggestions = useMemo(() => {
+    return products
+      .filter((p) => (p.useCount || 0) > 0 && !addedProductIds.has(p.id))
+      .sort((a, b) => (b.useCount || 0) - (a.useCount || 0))
+      .slice(0, SUGGESTIONS_LIMIT)
+  }, [products, addedProductIds])
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase()
@@ -53,8 +69,28 @@ export default function ProductSelection() {
         stallId: product.stallId,
         stallName: product.stallName,
       })
+      await recordProductUse(product.id)
       setExpandedId(null)
       navigate(`/list/${listId}`)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function handleQuickAdd(product) {
+    setSaving(true)
+    try {
+      await addItem(listId, {
+        productId: product.id,
+        productName: product.name,
+        quantity: 1,
+        unit: product.defaultUnit || 'un',
+        estimatedPrice: product.lastPrice || 0,
+        comment: '',
+        stallId: product.stallId,
+        stallName: product.stallName,
+      })
+      await recordProductUse(product.id)
     } finally {
       setSaving(false)
     }
@@ -106,6 +142,28 @@ export default function ProductSelection() {
           </button>
         ) : null}
 
+        {!search.trim() && suggestions.length > 0 ? (
+          <div className="suggestions">
+            <p className="screen-section-title">
+              <Sparkles size={12} /> Sueles agregar
+            </p>
+            <div className="suggestions__row">
+              {suggestions.map((product) => (
+                <button
+                  key={product.id}
+                  type="button"
+                  className="suggestion-chip"
+                  onClick={() => handleQuickAdd(product)}
+                  disabled={saving}
+                >
+                  <Plus size={14} />
+                  {product.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
         {loading ? (
           <LoadingState />
         ) : filtered.length === 0 ? (
@@ -119,6 +177,7 @@ export default function ProductSelection() {
                   <ProductPickRow
                     key={product.id}
                     product={product}
+                    alreadyAdded={addedProductIds.has(product.id)}
                     expanded={expandedId === product.id}
                     onToggle={() =>
                       setExpandedId(expandedId === product.id ? null : product.id)
@@ -136,7 +195,7 @@ export default function ProductSelection() {
   )
 }
 
-function ProductPickRow({ product, expanded, onToggle, onAdd, saving }) {
+function ProductPickRow({ product, alreadyAdded, expanded, onToggle, onAdd, saving }) {
   const [quantity, setQuantity] = useState(1)
   const [unit, setUnit] = useState(product.defaultUnit || 'un')
   const [estimatedPrice, setEstimatedPrice] = useState(
@@ -150,9 +209,16 @@ function ProductPickRow({ product, expanded, onToggle, onAdd, saving }) {
     <Card className="product-pick-row">
       <button type="button" className="product-pick-row__header" onClick={onToggle}>
         <span className="product-pick-row__name">{product.name}</span>
-        {product.lastPrice ? (
-          <span className="product-pick-row__price">{formatCurrency(product.lastPrice)}</span>
-        ) : null}
+        <span className="product-pick-row__meta">
+          {alreadyAdded ? (
+            <Pill variant="success" icon={Check}>
+              En tu lista
+            </Pill>
+          ) : null}
+          {product.lastPrice ? (
+            <span className="product-pick-row__price">{formatCurrency(product.lastPrice)}</span>
+          ) : null}
+        </span>
       </button>
 
       {expanded ? (

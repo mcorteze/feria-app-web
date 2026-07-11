@@ -24,6 +24,7 @@ function buildItemDoc(item) {
     estimatedPrice: item.estimatedPrice ?? 0,
     paidPrice: null,
     isBought: false,
+    notFound: false,
     comment: item.comment || '',
     stallId: item.stallId || null,
     stallName: item.stallName || '',
@@ -67,12 +68,23 @@ export function markItemBought(listId, itemId, { quantity, paidPrice }) {
     quantity,
     paidPrice,
     isBought: true,
+    notFound: false,
+  })
+}
+
+export function markItemNotFound(listId, itemId, comment) {
+  return updateDoc(doc(db, 'lists', listId, 'items', itemId), {
+    isBought: true,
+    notFound: true,
+    paidPrice: null,
+    comment: comment || '',
   })
 }
 
 export function markItemPending(listId, itemId) {
   return updateDoc(doc(db, 'lists', listId, 'items', itemId), {
     isBought: false,
+    notFound: false,
     paidPrice: null,
   })
 }
