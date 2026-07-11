@@ -7,9 +7,15 @@ export function useAuth() {
   const [authError, setAuthError] = useState('')
 
   useEffect(() => {
-    consumeRedirectResult().catch((err) => {
-      setAuthError(`Redirect: ${err?.code || 'error'} — ${err?.message || err}`)
-    })
+    consumeRedirectResult()
+      .then((redirectUser) => {
+        if (redirectUser) {
+          setAuthError(`OK redirect: ${redirectUser.uid}`)
+        }
+      })
+      .catch((err) => {
+        setAuthError(`Redirect error: ${err?.code || 'sin código'} — ${err?.message || err}`)
+      })
     const unsubscribe = watchAuthState((firebaseUser) => {
       setUser(firebaseUser)
       setLoading(false)

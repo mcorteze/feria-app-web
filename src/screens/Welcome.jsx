@@ -62,6 +62,9 @@ export default function Welcome() {
               <h1 className="welcome-title">Feria App</h1>
             </div>
             <div className="welcome-auth">
+              <p style={{ fontSize: 10, wordBreak: 'break-all', opacity: 0.5, margin: 0 }}>
+                {window.location.href}
+              </p>
               {(error || authError) ? <p className="welcome-error">{error || authError}</p> : null}
               <button
                 type="button"
