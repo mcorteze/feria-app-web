@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ChevronDown, ClipboardList, LogOut, ShoppingCart } from 'lucide-react'
+import { ClipboardList, LogOut, ShoppingCart } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useProfileName } from '../hooks/useProfileName'
 import { signInWithGoogle, signOut } from '../services/authRepository'
@@ -68,10 +68,9 @@ export default function Welcome() {
               onClick={() => setMenuOpen((v) => !v)}
               aria-expanded={menuOpen}
               aria-haspopup="menu"
+              aria-label="Menú de perfil"
             >
-              <Avatar photoURL={user.photoURL} name={name || user.displayName} size={32} />
-              <span className="welcome-topbar__name">{name || user.displayName}</span>
-              <ChevronDown size={16} className={`welcome-profile__chevron ${menuOpen ? 'welcome-profile__chevron--open' : ''}`} />
+              <Avatar photoURL={user.photoURL} name={name || user.displayName} size={36} />
             </button>
 
             {menuOpen ? (
@@ -140,41 +139,52 @@ export default function Welcome() {
             </div>
           </>
         ) : !name ? (
-          <form className="welcome-auth" onSubmit={handleSaveName}>
-            <div className="form-field">
-              <label className="form-label" htmlFor="displayName">
-                ¿Cómo te llamas?
-              </label>
-              <input
-                id="displayName"
-                className="form-input"
-                value={nameDraft}
-                onChange={(e) => setNameDraft(e.target.value)}
-                autoFocus
-              />
+          <>
+            <div className="welcome-brand">
+              <h1 className="welcome-title">Feria App</h1>
             </div>
-            <button type="submit" className="btn btn-primary" disabled={!nameDraft.trim()}>
-              Continuar
-            </button>
-          </form>
+            <form className="welcome-auth" onSubmit={handleSaveName}>
+              <div className="form-field">
+                <label className="form-label" htmlFor="displayName">
+                  ¿Cómo te llamas?
+                </label>
+                <input
+                  id="displayName"
+                  className="form-input"
+                  value={nameDraft}
+                  onChange={(e) => setNameDraft(e.target.value)}
+                  autoFocus
+                />
+              </div>
+              <button type="submit" className="btn btn-primary" disabled={!nameDraft.trim()}>
+                Continuar
+              </button>
+            </form>
+          </>
         ) : (
-          <div className="welcome-roles">
-            <HeroButton
-              icon={ClipboardList}
-              label="Planificador"
-              variant="brand"
-              onClick={() => navigate('/planner')}
-            />
-            <HeroButton
-              icon={ShoppingCart}
-              label="Comprador"
-              variant="buyer"
-              onClick={() => navigate('/buyer')}
-            />
-            <p className="welcome-hint">
-              Planificador arma la lista. Comprador la lleva a la feria.
-            </p>
-          </div>
+          <>
+            <div className="welcome-brand">
+              <p className="welcome-brand__label">Feria App</p>
+              <h1 className="welcome-greeting">Hola, {name}</h1>
+            </div>
+            <div className="welcome-roles">
+              <HeroButton
+                icon={ClipboardList}
+                label="Planificador"
+                variant="brand"
+                onClick={() => navigate('/planner')}
+              />
+              <HeroButton
+                icon={ShoppingCart}
+                label="Comprador"
+                variant="buyer"
+                onClick={() => navigate('/buyer')}
+              />
+              <p className="welcome-hint">
+                Planificador arma la lista. Comprador la lleva a la feria.
+              </p>
+            </div>
+          </>
         )}
       </div>
     </div>

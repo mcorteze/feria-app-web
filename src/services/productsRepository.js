@@ -41,6 +41,16 @@ export async function createProduct(product, ownerUid) {
   return docRef.id
 }
 
+export async function findOrCreateProduct(name, defaultUnit, existingProducts, ownerUid) {
+  const match = existingProducts.find(
+    (p) => p.name.trim().toLowerCase() === name.trim().toLowerCase(),
+  )
+  if (match) return match
+
+  const id = await createProduct({ name: name.trim(), defaultUnit }, ownerUid)
+  return { id, name: name.trim(), defaultUnit }
+}
+
 export function updateProduct(productId, changes) {
   return updateDoc(doc(db, 'products', productId), changes)
 }

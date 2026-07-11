@@ -86,7 +86,19 @@
 }
 
 .item-row--bought {
-  opacity: 0.6;
+  background: var(--color-surface-light);
+  box-shadow: var(--shadow-surface-light);
+}
+
+.item-row--active {
+  background: var(--color-accent);
+  box-shadow: var(--shadow-hero-brand);
+}
+
+.item-row--active .item-row__name,
+.item-row--active .item-row__meta,
+.item-row--active .item-row__check {
+  color: var(--color-text-on-accent);
 }
 
 .item-row--plain {
@@ -99,7 +111,7 @@
 }
 
 .item-row__check--done {
-  color: var(--color-accent);
+  color: var(--color-accent-strong);
 }
 
 .item-row__body {
@@ -118,11 +130,16 @@
 
 .item-row--bought .item-row__name {
   text-decoration: line-through;
+  color: var(--color-surface-light-text);
 }
 
 .item-row__meta {
   font-size: var(--font-size-secondary);
   color: var(--color-text-secondary);
+}
+
+.item-row--bought .item-row__meta {
+  color: var(--color-surface-light-text-secondary);
 }
 
 .item-row__comment {

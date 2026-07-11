@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeftRight,
+  Download,
   History as HistoryIcon,
   ShoppingBag,
   ShoppingBasket,
@@ -9,9 +10,19 @@ import {
   Trash2,
 } from 'lucide-react'
 import ScreenHeader from '../components/layout/ScreenHeader'
-import { Avatar, Card, EmptyState, HeroButton, LoadingState, Modal, Pill } from '../components/ui'
+import {
+  Avatar,
+  Card,
+  EmptyState,
+  HeroButton,
+  ImportListModal,
+  LoadingState,
+  Modal,
+  Pill,
+} from '../components/ui'
 import { useAuth } from '../hooks/useAuth'
 import { useLists } from '../hooks/useLists'
+import { useProducts } from '../hooks/useProducts'
 import { deleteList, joinListAsBuyer } from '../services/listsRepository'
 import { formatDateTime } from '../utils/format'
 import '../styles/screen.css'
@@ -21,7 +32,9 @@ export default function BuyerHome() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { data: lists, loading } = useLists(user?.uid, 'buyer')
+  const { data: products } = useProducts()
   const [modalOpen, setModalOpen] = useState(false)
+  const [importModalOpen, setImportModalOpen] = useState(false)
   const [listIdDraft, setListIdDraft] = useState('')
   const [joining, setJoining] = useState(false)
   const [error, setError] = useState('')
@@ -53,6 +66,7 @@ export default function BuyerHome() {
     <div className="screen">
       <ScreenHeader
         title="Comprador"
+        onBack={() => navigate(-1)}
         actions={
           <>
             <button
@@ -72,6 +86,15 @@ export default function BuyerHome() {
               title="Historial"
             >
               <HistoryIcon size={22} />
+            </button>
+            <button
+              type="button"
+              className="screen-header__icon-btn screen-header__icon-btn--ghost"
+              onClick={() => setImportModalOpen(true)}
+              aria-label="Importar lista desde JSON"
+              title="Importar lista"
+            >
+              <Download size={22} />
             </button>
             <button
               type="button"
@@ -203,6 +226,13 @@ export default function BuyerHome() {
           </button>
         </div>
       </Modal>
+
+      <ImportListModal
+        open={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        onImported={(listId) => navigate(`/list/${listId}`)}
+        products={products}
+      />
     </div>
   )
 }

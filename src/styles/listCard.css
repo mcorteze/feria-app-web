@@ -61,7 +61,7 @@
   height: 30px;
   border: none;
   border-radius: 50%;
-  background: var(--color-danger-bg);
-  color: var(--color-danger-strong);
+  background: var(--color-danger-vivid-bg);
+  color: var(--color-danger-vivid);
   flex-shrink: 0;
 }

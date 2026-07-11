@@ -232,7 +232,7 @@ export default function ActiveList() {
                     <button
                       key={item.id}
                       type="button"
-                      className={`item-row ${item.isBought ? 'item-row--bought' : ''}`}
+                      className={`item-row ${item.isBought ? 'item-row--bought' : ''} ${buyItem?.id === item.id ? 'item-row--active' : ''}`}
                       onClick={() => !item.isBought && setBuyItem(item)}
                     >
                       {item.isBought ? (

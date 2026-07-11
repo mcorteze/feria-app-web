@@ -25,6 +25,19 @@
   --color-danger-strong: #d34e47;
   --color-danger-bg: rgba(224, 100, 94, 0.14);
 
+  /* Rojo/coral vivo — solo para badges de descuento y acciones destructivas
+     puntuales inspiradas en la referencia de UI tipo POS; separado a propósito
+     del --color-danger desaturado, que sigue calibrado para confirmaciones. */
+  --color-danger-vivid: #ff5a4d;
+  --color-danger-vivid-bg: rgba(255, 90, 77, 0.14);
+
+  /* Superficie clara — usada puntualmente para "completado/pasivo" (ej. item
+     ya comprado), en contraste con el resto de la app que es oscura. */
+  --color-surface-light: #eef1e9;
+  --color-surface-light-text: #23261f;
+  --color-surface-light-text-secondary: #6b6f61;
+  --shadow-surface-light: 0 2px 8px rgba(0, 0, 0, 0.18);
+
   /* Texto */
   --color-text-primary: #f1f3f5;
   --color-text-secondary: #9aa2ad;

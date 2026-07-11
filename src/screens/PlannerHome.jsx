@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeftRight,
   ClipboardList,
+  Download,
   History as HistoryIcon,
   Plus,
   ShoppingBasket,
@@ -14,6 +15,7 @@ import {
   EmptyState,
   GuideCard,
   HeroButton,
+  ImportListModal,
   LoadingState,
   Modal,
   Pill,
@@ -34,6 +36,7 @@ export default function PlannerHome() {
   const { data: lists, loading } = useLists(user?.uid, 'planner')
   const { data: products, loading: productsLoading } = useProducts()
   const [modalOpen, setModalOpen] = useState(false)
+  const [importModalOpen, setImportModalOpen] = useState(false)
   const [nameDraft, setNameDraft] = useState('')
   const [creating, setCreating] = useState(false)
   const [hintDismissed, setHintDismissed] = useState(
@@ -74,6 +77,7 @@ export default function PlannerHome() {
     <div className="screen">
       <ScreenHeader
         title="Planificador"
+        onBack={() => navigate(-1)}
         actions={
           <>
             <button
@@ -93,6 +97,15 @@ export default function PlannerHome() {
               title="Historial"
             >
               <HistoryIcon size={22} />
+            </button>
+            <button
+              type="button"
+              className="screen-header__icon-btn screen-header__icon-btn--ghost"
+              onClick={() => setImportModalOpen(true)}
+              aria-label="Importar lista desde JSON"
+              title="Importar lista"
+            >
+              <Download size={22} />
             </button>
             <button
               type="button"
@@ -187,6 +200,13 @@ export default function PlannerHome() {
           </div>
         </form>
       </Modal>
+
+      <ImportListModal
+        open={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        onImported={(listId) => navigate(`/list/${listId}`)}
+        products={products}
+      />
     </div>
   )
 }

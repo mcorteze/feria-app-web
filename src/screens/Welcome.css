@@ -1,50 +1,26 @@
 .welcome-topbar {
   display: flex;
-  align-items: center;
+  justify-content: flex-end;
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border-light);
 }
 
 .welcome-profile {
   position: relative;
-  width: 100%;
 }
 
 .welcome-profile__trigger {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  width: 100%;
   border: none;
   background: none;
   padding: 0;
-  text-align: left;
-}
-
-.welcome-topbar__name {
-  flex: 1;
-  font-size: var(--font-size-card-sm);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.welcome-profile__chevron {
-  color: var(--color-text-tertiary);
-  flex-shrink: 0;
-  transition: transform 0.15s ease;
-}
-
-.welcome-profile__chevron--open {
-  transform: rotate(180deg);
+  border-radius: var(--radius-fab);
 }
 
 .welcome-profile__menu {
   position: absolute;
   top: calc(100% + var(--space-2));
-  left: 0;
+  right: 0;
   min-width: 180px;
   background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
@@ -85,6 +61,23 @@
 }
 
 .welcome-title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-title);
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.welcome-brand__label {
+  font-size: var(--font-size-label);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--color-text-secondary);
+  margin: 0 0 4px;
+}
+
+.welcome-greeting {
   font-size: var(--font-size-title);
   font-weight: var(--font-weight-title);
   color: var(--color-text-primary);
