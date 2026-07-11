@@ -80,7 +80,7 @@ export default function ActiveList() {
   const grouped = useMemo(() => groupByStall(items), [items])
 
   function goHome() {
-    navigate(role === 'buyer' ? '/buyer' : '/planner')
+    navigate(role === 'buyer' ? '/buyer' : '/planner', { replace: true })
   }
 
   async function handleRename(e) {

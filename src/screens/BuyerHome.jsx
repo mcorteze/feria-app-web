@@ -66,7 +66,7 @@ export default function BuyerHome() {
     <div className="screen">
       <ScreenHeader
         title="Comprador"
-        onBack={() => navigate(-1)}
+        onBack={() => navigate('/')}
         actions={
           <>
             <button
@@ -232,6 +232,7 @@ export default function BuyerHome() {
         onClose={() => setImportModalOpen(false)}
         onImported={(listId) => navigate(`/list/${listId}`)}
         products={products}
+        role="buyer"
       />
     </div>
   )

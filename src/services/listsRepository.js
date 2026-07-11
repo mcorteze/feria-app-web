@@ -65,7 +65,7 @@ export async function getList(listId) {
   return snap.exists() ? { id: snap.id, ...snap.data() } : null
 }
 
-export async function createList(name, owner) {
+export async function createList(name, owner, role = 'planner') {
   const docRef = await addDoc(listsCollection, {
     name,
     status: 'active',
@@ -76,7 +76,7 @@ export async function createList(name, owner) {
         uid: owner.uid,
         displayName: owner.displayName || '',
         photoURL: owner.photoURL || '',
-        role: 'planner',
+        role,
       },
     ],
     collaboratorUids: [owner.uid],

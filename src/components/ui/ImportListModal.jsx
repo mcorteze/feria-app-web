@@ -8,7 +8,7 @@ import { findOrCreateProduct } from '../../services/productsRepository'
 import { normalizeUnit } from '../../utils/units'
 import { parseImportPayload } from '../../utils/importList'
 
-export default function ImportListModal({ open, onClose, onImported, products }) {
+export default function ImportListModal({ open, onClose, onImported, products, role = 'planner' }) {
   const { user } = useAuth()
   const [text, setText] = useState('')
   const [importing, setImporting] = useState(false)
@@ -36,11 +36,15 @@ export default function ImportListModal({ open, onClose, onImported, products })
     try {
       const payload = parseImportPayload(text)
 
-      listId = await createList(payload.name, {
-        uid: user.uid,
-        displayName: user.displayName || '',
-        photoURL: user.photoURL || '',
-      })
+      listId = await createList(
+        payload.name,
+        {
+          uid: user.uid,
+          displayName: user.displayName || '',
+          photoURL: user.photoURL || '',
+        },
+        role,
+      )
 
       const knownProducts = [...products]
       const items = []

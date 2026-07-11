@@ -77,7 +77,7 @@ export default function PlannerHome() {
     <div className="screen">
       <ScreenHeader
         title="Planificador"
-        onBack={() => navigate(-1)}
+        onBack={() => navigate('/')}
         actions={
           <>
             <button
