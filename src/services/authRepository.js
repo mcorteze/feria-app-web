@@ -2,7 +2,6 @@ import {
   getRedirectResult,
   onAuthStateChanged,
   signInWithPopup,
-  signInWithRedirect,
   signOut as firebaseSignOut,
   updateProfile,
 } from 'firebase/auth'
@@ -26,23 +25,20 @@ async function ensureUserDoc(user) {
   }
 }
 
-function isMobileDevice() {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-}
-
-// En móvil, window.open() (lo que usa signInWithPopup por dentro) solo se
-// abre si se llama de forma completamente síncrona dentro del gesto de
-// click — cualquier await previo (incluso a una promesa ya resuelta) puede
-// bastar para que el navegador lo trate como popup no solicitado y lo
-// bloquee sin lanzar error. Por eso en móvil se va directo a redirect, sin
-// intentar popup primero. En desktop no hay ese problema y el popup da
-// mejor UX (no navega fuera de la página).
+// window.open() (lo que usa signInWithPopup por dentro) solo se abre en
+// móvil si se llama de forma completamente síncrona dentro del gesto de
+// click — cualquier await previo (incluso a authReady, aunque ya esté
+// resuelto) basta para que el navegador lo trate como popup no solicitado
+// y lo bloquee sin lanzar error capturable. Por eso authReady NO se espera
+// aquí: se dispara en el import de config.js y para cuando el usuario
+// alcanza a tocar el botón ya está resuelto en la práctica.
+//
+// Se usa popup siempre (nunca redirect): redirect navega por el dominio
+// intermedio *.firebaseapp.com, y Bounce Tracking Protection de Chrome
+// purga ese estado a mitad del flujo porque el usuario nunca "interactúa"
+// directamente ahí — eso hacía fallar el login de forma intermitente sin
+// importar cuántos otros fixes se aplicaran alrededor.
 export async function signInWithGoogle() {
-  await authReady
-  if (isMobileDevice()) {
-    await signInWithRedirect(auth, googleProvider)
-    return null
-  }
   const result = await signInWithPopup(auth, googleProvider)
   await ensureUserDoc(result.user)
   return result.user
