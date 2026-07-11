@@ -26,31 +26,26 @@ async function ensureUserDoc(user) {
   }
 }
 
-const POPUP_FALLBACK_CODES = new Set([
-  'auth/popup-blocked',
-  'auth/popup-closed-by-user',
-  'auth/cancelled-popup-request',
-  'auth/operation-not-supported-in-this-environment',
-])
+function isMobileDevice() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+}
 
-// Netlify permite configurar Cross-Origin-Opener-Policy: unsafe-none
-// (netlify.toml), por eso el popup vuelve a ser viable — a diferencia de
-// GitHub Pages, que fuerza same-origin sin posibilidad de cambiarlo.
-// El popup evita por completo el problema de Bounce Tracking Protection
-// de Chrome, que purgaba el estado de firebaseapp.com durante el redirect.
+// En móvil, window.open() (lo que usa signInWithPopup por dentro) solo se
+// abre si se llama de forma completamente síncrona dentro del gesto de
+// click — cualquier await previo (incluso a una promesa ya resuelta) puede
+// bastar para que el navegador lo trate como popup no solicitado y lo
+// bloquee sin lanzar error. Por eso en móvil se va directo a redirect, sin
+// intentar popup primero. En desktop no hay ese problema y el popup da
+// mejor UX (no navega fuera de la página).
 export async function signInWithGoogle() {
   await authReady
-  try {
-    const result = await signInWithPopup(auth, googleProvider)
-    await ensureUserDoc(result.user)
-    return result.user
-  } catch (err) {
-    if (POPUP_FALLBACK_CODES.has(err?.code)) {
-      await signInWithRedirect(auth, googleProvider)
-      return null
-    }
-    throw err
+  if (isMobileDevice()) {
+    await signInWithRedirect(auth, googleProvider)
+    return null
   }
+  const result = await signInWithPopup(auth, googleProvider)
+  await ensureUserDoc(result.user)
+  return result.user
 }
 
 export async function consumeRedirectResult() {
