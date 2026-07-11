@@ -1,4 +1,4 @@
-import { HashRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
 import Welcome from './screens/Welcome'
 import PlannerHome from './screens/PlannerHome'
@@ -10,7 +10,7 @@ import History from './screens/History'
 
 function App() {
   return (
-    <HashRouter>
+    <BrowserRouter basename="/feria-app-web">
       <AppLayout>
         <Routes>
           <Route path="/" element={<Welcome />} />
@@ -22,7 +22,7 @@ function App() {
           <Route path="/history" element={<History />} />
         </Routes>
       </AppLayout>
-    </HashRouter>
+    </BrowserRouter>
   )
 }
 

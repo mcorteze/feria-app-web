@@ -14,10 +14,10 @@ Ninguna en curso. Fase 1 (construcción completa del proyecto) cerrada. Pendient
 - [2026-07-10] Proyecto construido completo vía agente en background: tokens, servicios (repository pattern), hooks de dominio, componentes UI, 7 pantallas, `firestore.rules`. `npm run build` verificado limpio.
 
 ## Pendiente
-- [ ] Confirmar que el deploy a GitHub Pages corrió bien tras el push del seed de productos (revisar pestaña Actions del repo)
-- [ ] Agregar `mcorteze.github.io` a "Authorized domains" en Firebase Authentication → Settings si el login con Google falla en producción
+- [ ] Confirmar que el login con Google funciona en Chrome Android tras el cambio a BrowserRouter + 404.html (el usuario probará de nuevo)
+- [ ] Probar también en iPhone/Safari si aplica — no se ha probado ahí todavía
 - [ ] Probar el flujo end-to-end en https://mcorteze.github.io/feria-app-web/ (login Google, cargar catálogo inicial desde /products, crear lista, unirse como comprador)
-- [ ] Code-splitting del bundle de Firebase si el tamaño (~843KB) llega a ser un problema real (nota del agente constructor, no urgente)
+- [ ] Code-splitting del bundle de Firebase si el tamaño (~844KB) llega a ser un problema real (nota del agente constructor, no urgente)
 - [ ] Revisar visualmente fidelidad de diseño en navegador real (mobile viewport) comparando contra capturas del original si el usuario las tiene
 
 ## Contexto crítico (lo que no puede olvidarse)
@@ -39,3 +39,7 @@ Ninguna en curso. Fase 1 (construcción completa del proyecto) cerrada. Pendient
 - Despliegue a GitHub Pages configurado: `HashRouter` en vez de `BrowserRouter` (evita 404 en subpath al recargar), `base: '/feria-app-web/'` en `vite.config.js`, workflow `.github/workflows/deploy.yml` (build + deploy-pages), 6 GitHub Secrets configurados, Pages Source = GitHub Actions
 - Git inicializado, remote `origin` → `https://github.com/mcorteze/feria-app-web.git`, rama `main`, primer push hecho — sitio publicado en https://mcorteze.github.io/feria-app-web/
 - Seed de catálogo de productos: `categories` usa fallback local (decisión previa, sin cambios). `products` (~100 items del original) NO tenía seed — se creó `src/data/seedProducts.js` con el catálogo completo migrado (category_id numérico → slug de categoría, unidades no soportadas mapeadas: litro→lt, lata/rollo→un, bolsa/sobre/frasco/caja→paquete) y un botón "Cargar catálogo inicial" en `/products` (solo visible si el catálogo está vacío, usa `writeBatch` vía `seedProducts()` en `productsRepository.js`). `EmptyState` ampliado con acción secundaria opcional para soportar el botón "Nuevo producto" junto al de seed.
+- Bug de login en móvil, 3 iteraciones hasta la causa real:
+  1. Popup se cerraba solo → cambio a `signInWithRedirect` en móvil (insuficiente)
+  2. Redirect completaba pero sesión no persistía → se agregó `setPersistence(browserLocalPersistence)` (insuficiente)
+  3. **Causa raíz real**: `HashRouter` y el mecanismo de retorno de `signInWithRedirect` compiten por el mismo fragmento `#` de la URL — React Router limpiaba el hash de estado de Firebase antes de que el SDK pudiera leerlo. Fix: cambio a `BrowserRouter` con `basename="/feria-app-web"` + patrón estándar `404.html` de GitHub Pages (redirige codificando la ruta en `?redirect=`, `index.html` la restaura con `history.replaceState` antes de montar React). También se simplificó `signInWithGoogle`: intenta `signInWithPopup` siempre primero, cae a `signInWithRedirect` solo si el popup fue bloqueado/cerrado (por código de error), en vez de decidir por user-agent.

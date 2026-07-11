@@ -9,10 +9,6 @@ import {
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { auth, authReady, db, googleProvider } from '../firebase/config'
 
-function isMobileDevice() {
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-}
-
 export function watchAuthState(callback) {
   return onAuthStateChanged(auth, callback)
 }
@@ -30,15 +26,26 @@ async function ensureUserDoc(user) {
   }
 }
 
+const POPUP_FALLBACK_CODES = new Set([
+  'auth/popup-blocked',
+  'auth/popup-closed-by-user',
+  'auth/cancelled-popup-request',
+  'auth/operation-not-supported-in-this-environment',
+])
+
 export async function signInWithGoogle() {
   await authReady
-  if (isMobileDevice()) {
-    await signInWithRedirect(auth, googleProvider)
-    return null
+  try {
+    const result = await signInWithPopup(auth, googleProvider)
+    await ensureUserDoc(result.user)
+    return result.user
+  } catch (err) {
+    if (POPUP_FALLBACK_CODES.has(err?.code)) {
+      await signInWithRedirect(auth, googleProvider)
+      return null
+    }
+    throw err
   }
-  const result = await signInWithPopup(auth, googleProvider)
-  await ensureUserDoc(result.user)
-  return result.user
 }
 
 export async function consumeRedirectResult() {

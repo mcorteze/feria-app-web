@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Feria App</title>
+    <script>
+      // GitHub Pages no soporta rutas de SPA nativamente: cualquier URL que no
+      // sea un archivo real cae aquí. Codificamos la ruta pedida como query
+      // string y redirigimos a index.html, que la restaura antes de montar React.
+      var pathSegmentsToKeep = 1 // /feria-app-web/
+      var l = window.location
+      var path = l.pathname
+        .split('/')
+        .slice(0, 1 + pathSegmentsToKeep)
+        .join('/')
+      var rest = l.pathname
+        .split('/')
+        .slice(1 + pathSegmentsToKeep)
+        .join('/')
+      l.replace(
+        path +
+          '/?redirect=' +
+          encodeURIComponent(rest + l.search + l.hash),
+      )
+    </script>
+  </head>
+  <body></body>
+</html>

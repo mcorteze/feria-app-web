@@ -5,6 +5,18 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Feria App</title>
+    <script>
+      // Complemento de public/404.html: si venimos de una ruta profunda
+      // reescrita como ?redirect=..., la restauramos con history.replaceState
+      // antes de que React Router monte, para que la URL quede limpia.
+      (function () {
+        var redirect = new URLSearchParams(window.location.search).get('redirect')
+        if (redirect) {
+          var basePath = window.location.pathname.replace(/\/$/, '')
+          window.history.replaceState(null, '', basePath + '/' + redirect)
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
