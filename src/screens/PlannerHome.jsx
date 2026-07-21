@@ -41,6 +41,7 @@ export default function PlannerHome() {
   const [nameDraft, setNameDraft] = useState('')
   const [selectedCollaborators, setSelectedCollaborators] = useState([])
   const [creating, setCreating] = useState(false)
+  const [createError, setCreateError] = useState('')
   const [hintDismissed, setHintDismissed] = useState(
     () => localStorage.getItem(CATALOG_HINT_DISMISSED_KEY) === '1',
   )
@@ -60,6 +61,7 @@ export default function PlannerHome() {
   function openModal() {
     setNameDraft(`Feria ${formatShortDate(new Date())}`)
     setSelectedCollaborators([])
+    setCreateError('')
     setModalOpen(true)
   }
 
@@ -83,6 +85,7 @@ export default function PlannerHome() {
     e.preventDefault()
     if (!nameDraft.trim() || !user) return
     setCreating(true)
+    setCreateError('')
     try {
       const listId = await createList(
         nameDraft.trim(),
@@ -96,6 +99,8 @@ export default function PlannerHome() {
       )
       setModalOpen(false)
       navigate(`/list/${listId}`)
+    } catch (err) {
+      setCreateError(err.message || 'No se pudo crear la lista.')
     } finally {
       setCreating(false)
     }
@@ -194,6 +199,8 @@ export default function PlannerHome() {
               </div>
             </div>
           ) : null}
+
+          {createError ? <p className="welcome-error">{createError}</p> : null}
 
           <div className="form-actions">
             <button
