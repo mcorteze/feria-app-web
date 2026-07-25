@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
+import RequireAuth from './components/layout/RequireAuth'
 import Welcome from './screens/Welcome'
 import Home from './screens/Home'
 import PlannerHome from './screens/PlannerHome'
@@ -14,20 +15,26 @@ import Account from './screens/Account'
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AppLayout>
         <Routes>
           <Route path="/" element={<Welcome />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/planner" element={<PlannerHome />} />
-          <Route path="/buyer" element={<BuyerHome />} />
-          <Route path="/list/:listId" element={<ActiveList />} />
-          <Route path="/list/:listId/add-product" element={<ProductSelection />} />
-          <Route path="/products" element={<ProductsCatalog />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/collaborators" element={<FrequentCollaborators />} />
-          <Route path="/accesos" element={<Tools />} />
-          <Route path="/cuenta" element={<Account />} />
+          <Route path="/home" element={<RequireAuth><Home /></RequireAuth>} />
+          <Route path="/planner" element={<RequireAuth><PlannerHome /></RequireAuth>} />
+          <Route path="/buyer" element={<RequireAuth><BuyerHome /></RequireAuth>} />
+          <Route path="/list/:listId" element={<RequireAuth><ActiveList /></RequireAuth>} />
+          <Route
+            path="/list/:listId/add-product"
+            element={<RequireAuth><ProductSelection /></RequireAuth>}
+          />
+          <Route path="/products" element={<RequireAuth><ProductsCatalog /></RequireAuth>} />
+          <Route path="/history" element={<RequireAuth><History /></RequireAuth>} />
+          <Route
+            path="/collaborators"
+            element={<RequireAuth><FrequentCollaborators /></RequireAuth>}
+          />
+          <Route path="/accesos" element={<RequireAuth><Tools /></RequireAuth>} />
+          <Route path="/cuenta" element={<RequireAuth><Account /></RequireAuth>} />
         </Routes>
       </AppLayout>
     </BrowserRouter>

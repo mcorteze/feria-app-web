@@ -34,7 +34,7 @@ export default function PlannerHome() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
-  const { data: lists, loading } = useLists(user?.uid, 'planner')
+  const { data: lists, loading, error: listsError } = useLists(user?.uid, 'planner')
   const { data: products, loading: productsLoading } = useProducts()
   const { data: frequentCollaborators } = useFrequentCollaborators(user?.uid)
   const [modalOpen, setModalOpen] = useState(false)
@@ -133,6 +133,12 @@ export default function PlannerHome() {
         <HeroButton icon={Plus} label="Nueva Lista" variant="brand" onClick={openModal} />
 
         <p className="screen-section-title">Mis listas</p>
+
+        {listsError ? (
+          <p className="welcome-error">
+            No se pudieron cargar tus listas ({listsError.code || listsError.message}).
+          </p>
+        ) : null}
 
         {loading ? (
           <LoadingState />

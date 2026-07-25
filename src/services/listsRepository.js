@@ -7,7 +7,6 @@ import {
   doc,
   getDoc,
   onSnapshot,
-  orderBy,
   query,
   serverTimestamp,
   updateDoc,
@@ -17,12 +16,16 @@ import { db } from '../firebase/config'
 
 const listsCollection = collection(db, 'lists')
 
+function sortByCreatedAtDesc(lists) {
+  return [...lists].sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0))
+}
+
+// Deliberadamente SIN orderBy en la query: combinar array-contains con orderBy
+// en otro campo requiere un índice compuesto en Firestore (mismo patrón que
+// myTasksQuery() en hub/tasksApi.ts). Se ordena acá en el cliente para no
+// depender de crear ese índice manualmente en cada entorno/proyecto Firebase.
 export function watchListsForUser(uid, role, callback, onError) {
-  const q = query(
-    listsCollection,
-    where('collaboratorUids', 'array-contains', uid),
-    orderBy('createdAt', 'desc'),
-  )
+  const q = query(listsCollection, where('collaboratorUids', 'array-contains', uid))
   return onSnapshot(
     q,
     (snapshot) => {
@@ -32,24 +35,20 @@ export function watchListsForUser(uid, role, callback, onError) {
             (list.collaborators || []).some((c) => c.uid === uid && c.role === role),
           )
         : all
-      callback(filtered)
+      callback(sortByCreatedAtDesc(filtered))
     },
     onError,
   )
 }
 
 export function watchCompletedListsForUser(uid, callback, onError) {
-  const q = query(
-    listsCollection,
-    where('collaboratorUids', 'array-contains', uid),
-    orderBy('createdAt', 'desc'),
-  )
+  const q = query(listsCollection, where('collaboratorUids', 'array-contains', uid))
   return onSnapshot(
     q,
     (snapshot) => {
       const all = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
       const filtered = all.filter((list) => list.status === 'completed')
-      callback(filtered)
+      callback(sortByCreatedAtDesc(filtered))
     },
     onError,
   )
@@ -77,6 +76,7 @@ export async function createList(name, owner, role = 'planner', extraCollaborato
     photoURL: c.photoURL || '',
     role: 'buyer',
   }))
+  const collaboratorUids = [owner.uid, ...extra.map((c) => c.uid)]
   const docRef = await addDoc(listsCollection, {
     name,
     status: 'active',
@@ -91,7 +91,7 @@ export async function createList(name, owner, role = 'planner', extraCollaborato
       },
       ...extra,
     ],
-    collaboratorUids: [owner.uid, ...extra.map((c) => c.uid)],
+    collaboratorUids,
   })
   return docRef.id
 }

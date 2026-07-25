@@ -23,7 +23,7 @@ export default function BuyerHome() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
-  const { data: lists, loading } = useLists(user?.uid, 'buyer')
+  const { data: lists, loading, error: listsError } = useLists(user?.uid, 'buyer')
   const [modalOpen, setModalOpen] = useState(false)
   const [listIdDraft, setListIdDraft] = useState('')
   const [joining, setJoining] = useState(false)
@@ -91,6 +91,12 @@ export default function BuyerHome() {
         />
 
         <p className="screen-section-title">Mis compras</p>
+
+        {listsError ? (
+          <p className="welcome-error">
+            No se pudieron cargar tus listas ({listsError.code || listsError.message}).
+          </p>
+        ) : null}
 
         {loading ? (
           <LoadingState />
