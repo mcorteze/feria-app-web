@@ -212,6 +212,7 @@ export default function ActiveList() {
     <div className="screen">
       <ScreenHeader
         title={list.name}
+        subtitle={role === 'buyer' ? 'Comprador' : 'Planificador'}
         onBack={goHome}
         onTitleClick={
           isPlanningMode
@@ -267,7 +268,7 @@ export default function ActiveList() {
         </span>
       </div>
 
-      <div className="screen-content">
+      <div className={`screen-content ${!itemsLoading && items.length === 0 ? 'screen-content--centered' : ''}`}>
         {isReadOnly ? (
           <div className="active-list-summary-banner">
             <Pill variant="success">Finalizada</Pill>

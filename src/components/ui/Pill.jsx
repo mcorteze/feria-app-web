@@ -6,6 +6,7 @@ const VARIANT_CLASS = {
   neutral: 'ui-pill--neutral',
   danger: 'ui-pill--danger',
   info: 'ui-pill--info',
+  buyer: 'ui-pill--buyer',
 }
 
 export default function Pill({ children, variant = 'neutral', icon: Icon }) {

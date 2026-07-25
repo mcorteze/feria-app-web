@@ -30,6 +30,13 @@
   color: var(--color-accent);
 }
 
+.screen-header__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
 .screen-header__title {
   font-size: var(--font-size-title-sm);
   font-weight: var(--font-weight-title);
@@ -45,6 +52,19 @@
   border: none;
   padding: 0;
   text-align: left;
+}
+
+.screen-header__subtitle {
+  font-size: var(--font-size-secondary-sm);
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.screen-header__role-badge {
+  flex-shrink: 0;
 }
 
 .screen-header__actions {

@@ -1,7 +1,7 @@
 .ui-fab {
   position: fixed;
-  right: var(--space-5);
-  bottom: var(--space-5);
+  right: max(var(--space-5), calc(50% - 240px + var(--space-5)));
+  bottom: calc(var(--bottom-nav-height) + var(--space-3) + var(--safe-area-bottom));
   width: 56px;
   height: 56px;
   border-radius: var(--radius-fab);

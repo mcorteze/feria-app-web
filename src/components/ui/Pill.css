@@ -35,3 +35,8 @@
   background: var(--color-accent-bg);
   color: var(--color-accent);
 }
+
+.ui-pill--buyer {
+  background: var(--color-buyer-bg);
+  color: var(--color-buyer);
+}

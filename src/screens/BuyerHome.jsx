@@ -72,7 +72,15 @@ export default function BuyerHome() {
 
   return (
     <div className="screen">
-      <ScreenHeader title="Comprador" onBack={() => navigate('/home')} />
+      <ScreenHeader
+        title="Comprador"
+        onBack={() => navigate('/home')}
+        roleBadge={
+          <Pill variant="buyer" icon={ShoppingCart}>
+            Comprador
+          </Pill>
+        }
+      />
 
       <div className="screen-content">
         <HeroButton

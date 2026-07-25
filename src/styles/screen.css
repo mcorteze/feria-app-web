@@ -7,9 +7,18 @@
 .screen-content {
   flex: 1;
   padding: var(--space-4);
+  padding-bottom: calc(var(--space-4) + var(--bottom-nav-height) + var(--safe-area-bottom));
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+}
+
+.screen-content--no-nav-space {
+  padding-bottom: var(--space-4);
+}
+
+.screen-content--centered {
+  justify-content: center;
 }
 
 .screen-section-title {

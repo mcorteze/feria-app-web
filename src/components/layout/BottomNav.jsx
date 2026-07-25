@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ClipboardList, Grid2x2, Plus, ShoppingCart, User } from 'lucide-react'
-import { getLastRole, setLastRole } from '../../utils/lastRole'
+import { ClipboardList, Grid2x2, ShoppingCart, User } from 'lucide-react'
+import { getLastRole } from '../../utils/lastRole'
 import './BottomNav.css'
 
 export default function BottomNav() {
@@ -24,7 +24,6 @@ export default function BottomNav() {
       active: location.pathname === `/${lastRole}`,
       onClick: () => navigate(`/${lastRole}`),
     },
-    { key: 'add', isAction: true },
     {
       key: 'tools',
       icon: Grid2x2,
@@ -41,36 +40,19 @@ export default function BottomNav() {
     },
   ]
 
-  function handleAdd() {
-    setLastRole(lastRole)
-    navigate(`/${lastRole}`, { state: { openCreate: true } })
-  }
-
   return (
     <nav className="bottom-nav">
-      {items.map((item) =>
-        item.isAction ? (
-          <button
-            key={item.key}
-            type="button"
-            className="bottom-nav__fab"
-            onClick={handleAdd}
-            aria-label="Crear"
-          >
-            <Plus size={26} strokeWidth={2.5} />
-          </button>
-        ) : (
-          <button
-            key={item.key}
-            type="button"
-            className={`bottom-nav__item${item.active ? ' bottom-nav__item--active' : ''}`}
-            onClick={item.onClick}
-          >
-            <item.icon size={22} />
-            <span className="bottom-nav__label">{item.label}</span>
-          </button>
-        ),
-      )}
+      {items.map((item) => (
+        <button
+          key={item.key}
+          type="button"
+          className={`bottom-nav__item${item.active ? ' bottom-nav__item--active' : ''}`}
+          onClick={item.onClick}
+        >
+          <item.icon size={22} />
+          <span className="bottom-nav__label">{item.label}</span>
+        </button>
+      ))}
     </nav>
   )
 }

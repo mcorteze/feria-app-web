@@ -108,6 +108,15 @@
   /* Overlay */
   --color-backdrop: rgba(0, 0, 0, 0.65);
 
+  /* Safe area — compensa notch/home indicator en iOS y gestos de Android.
+     0px de fallback en dispositivos sin recorte físico de pantalla. */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Alto real del BottomNav (contenido + padding vertical), usado para
+     reservar espacio inferior en pantallas con contenido scrolleable. */
+  --bottom-nav-height: 64px;
+
   color-scheme: light;
 }
 

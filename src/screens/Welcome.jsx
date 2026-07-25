@@ -48,7 +48,7 @@ export default function Welcome() {
 
   return (
     <div className="screen">
-      <div className="screen-content welcome-content">
+      <div className="screen-content screen-content--no-nav-space welcome-content">
         {!user ? (
           <>
             <div className="welcome-brand">

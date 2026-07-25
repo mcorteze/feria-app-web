@@ -108,7 +108,15 @@ export default function PlannerHome() {
 
   return (
     <div className="screen">
-      <ScreenHeader title="Planificador" onBack={() => navigate('/home')} />
+      <ScreenHeader
+        title="Planificador"
+        onBack={() => navigate('/home')}
+        roleBadge={
+          <Pill variant="success" icon={ClipboardList}>
+            Planificador
+          </Pill>
+        }
+      />
 
       <div className="screen-content">
         {showCatalogHint ? (
