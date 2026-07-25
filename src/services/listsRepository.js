@@ -11,22 +11,27 @@ import {
   query,
   serverTimestamp,
   updateDoc,
+  where,
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
 
 const listsCollection = collection(db, 'lists')
 
 export function watchListsForUser(uid, role, callback, onError) {
-  const q = query(listsCollection, orderBy('createdAt', 'desc'))
+  const q = query(
+    listsCollection,
+    where('collaboratorUids', 'array-contains', uid),
+    orderBy('createdAt', 'desc'),
+  )
   return onSnapshot(
     q,
     (snapshot) => {
       const all = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-      const filtered = all.filter((list) =>
-        (list.collaborators || []).some(
-          (c) => c.uid === uid && (!role || c.role === role),
-        ),
-      )
+      const filtered = role
+        ? all.filter((list) =>
+            (list.collaborators || []).some((c) => c.uid === uid && c.role === role),
+          )
+        : all
       callback(filtered)
     },
     onError,
@@ -34,16 +39,16 @@ export function watchListsForUser(uid, role, callback, onError) {
 }
 
 export function watchCompletedListsForUser(uid, callback, onError) {
-  const q = query(listsCollection, orderBy('createdAt', 'desc'))
+  const q = query(
+    listsCollection,
+    where('collaboratorUids', 'array-contains', uid),
+    orderBy('createdAt', 'desc'),
+  )
   return onSnapshot(
     q,
     (snapshot) => {
       const all = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-      const filtered = all.filter(
-        (list) =>
-          list.status === 'completed' &&
-          (list.collaborators || []).some((c) => c.uid === uid),
-      )
+      const filtered = all.filter((list) => list.status === 'completed')
       callback(filtered)
     },
     onError,
