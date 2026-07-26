@@ -55,10 +55,18 @@ export default function BuyerHome() {
     setError('')
     try {
       const listId = await joinListAsBuyer(listIdDraft.trim(), user)
-      setModalOpen(false)
+      // Se navega sin cerrar el modal primero: BuyerHome (con el modal y el
+      // input con foco) se desmonta entero junto con la navegación, en vez de
+      // re-renderizar primero con el modal cerrado (mostrando de golpe la
+      // lista recién unida vía el snapshot en tiempo real) y solo después
+      // cambiar de pantalla — eso era lo que se veía como "parpadeo".
       navigate(`/list/${listId}`)
-    } catch {
-      setError('No se encontró la lista. Revisa el código.')
+    } catch (err) {
+      setError(
+        err.message === 'La lista no existe'
+          ? 'No se encontró la lista. Revisa el código.'
+          : `No se pudo unir a la lista (${err.code || err.message}).`,
+      )
     } finally {
       setJoining(false)
     }

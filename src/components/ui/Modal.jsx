@@ -16,7 +16,15 @@ export default function Modal({ open, onClose, title, children }) {
     document.addEventListener('keydown', handleKeyDown)
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
-      if (previouslyFocused instanceof HTMLElement) previouslyFocused.focus()
+      // Si el cierre del modal vino acompañado de una navegación (ej. unirse
+      // a una lista y saltar directo a /list/:id), el elemento que abrió el
+      // modal puede ya no estar en el documento — enfocarlo ahí no sirve y en
+      // móvil compite con el teclado virtual cerrándose, causando un
+      // parpadeo visible. Solo se restaura el foco si sigue siendo parte del
+      // documento (mismo flujo, sin cambio de ruta de por medio).
+      if (previouslyFocused instanceof HTMLElement && document.contains(previouslyFocused)) {
+        previouslyFocused.focus()
+      }
     }
   }, [open, onClose])
 

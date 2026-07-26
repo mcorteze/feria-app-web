@@ -24,7 +24,15 @@ service cloud.firestore {
     match /lists/{listId} {
       allow create: if isSignedIn() &&
         request.resource.data.collaboratorUids.hasAny([request.auth.uid]);
-      allow read, update, delete: if isSignedIn() && isCollaborator(resource.data);
+      // get (documento individual) se permite a cualquier autenticado: es lo
+      // que joinListAsBuyer necesita leer ANTES de convertirse en colaborador
+      // para validar que el código de invitación existe. list (query de
+      // colección) sigue restringido a colaboradores vía isCollaborator, así
+      // que nadie puede enumerar listas ajenas, solo leer una si ya conoce su
+      // ID exacto (el código de invitación).
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && isCollaborator(resource.data);
+      allow update, delete: if isSignedIn() && isCollaborator(resource.data);
 
       match /items/{itemId} {
         function parentList() {
