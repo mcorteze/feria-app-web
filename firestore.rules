@@ -12,6 +12,23 @@ service cloud.firestore {
         listData.collaboratorUids.hasAny([request.auth.uid]);
     }
 
+    // joinListAsBuyer se agrega a SÍ MISMO a una lista de la que todavía no
+    // es colaborador (por eso isCollaborator(resource.data), evaluado sobre
+    // el estado ANTES del update, siempre da false acá — es la misma
+    // dependencia circular que ya se resolvió para "get"). Se permite este
+    // caso puntual verificando que collaboratorUids después del cambio sea
+    // exactamente collaboratorUids antes + el propio uid (nadie puede
+    // agregar a un tercero, ni tocar ningún otro campo del documento en esta
+    // vía).
+    function isSelfJoining() {
+      let before = resource.data;
+      let after = request.resource.data;
+      return isSignedIn() &&
+        !before.collaboratorUids.hasAny([request.auth.uid]) &&
+        after.collaboratorUids == before.collaboratorUids.concat([request.auth.uid]) &&
+        after.diff(before).affectedKeys().hasOnly(['collaborators', 'collaboratorUids']);
+    }
+
     match /users/{uid} {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && request.auth.uid == uid;
@@ -32,7 +49,8 @@ service cloud.firestore {
       // ID exacto (el código de invitación).
       allow get: if isSignedIn();
       allow list: if isSignedIn() && isCollaborator(resource.data);
-      allow update, delete: if isSignedIn() && isCollaborator(resource.data);
+      allow update: if isSignedIn() && (isCollaborator(resource.data) || isSelfJoining());
+      allow delete: if isSignedIn() && isCollaborator(resource.data);
 
       match /items/{itemId} {
         function parentList() {
