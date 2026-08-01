@@ -69,7 +69,23 @@ service cloud.firestore {
     match /products/{productId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && request.resource.data.ownerUid == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.ownerUid == request.auth.uid;
+
+      // El dueño edita cualquier campo de su producto. Cualquier otro usuario
+      // solo puede tocar la memoria de uso del catálogo compartido:
+      //  - stallId/stallName: en qué puesto vive el producto. Lo aprende el
+      //    COMPRADOR al agrupar en modo Organizar, y casi nunca es el dueño
+      //    del catálogo (lo sembró el planificador).
+      //  - useCount: contador de "sueles agregar", que incrementa quien sea
+      //    que arme la lista.
+      // Sin esta excepción ninguna de las dos cosas se puede persistir entre
+      // los dos miembros de un mismo grupo de compra.
+      allow update: if isSignedIn() && (
+        resource.data.ownerUid == request.auth.uid ||
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['stallId', 'stallName', 'useCount'])
+      );
+
+      allow delete: if isSignedIn() && resource.data.ownerUid == request.auth.uid;
     }
 
     match /stalls/{stallId} {

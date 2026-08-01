@@ -15,6 +15,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useLists } from '../hooks/useLists'
 import { deleteList, joinListAsBuyer } from '../services/listsRepository'
 import { formatDateTime } from '../utils/format'
+import { formatListAge, isListExpired } from '../utils/listAge'
 import { setLastRole } from '../utils/lastRole'
 import '../styles/screen.css'
 import '../styles/listCard.css'
@@ -124,8 +125,24 @@ export default function BuyerHome() {
                 <Card key={list.id} onClick={() => navigate(`/list/${list.id}`)}>
                   <div className="list-card-row">
                     <span className="list-card-name">{list.name}</span>
-                    <Pill variant={list.status === 'completed' ? 'success' : 'pending'}>
-                      {list.status === 'completed' ? 'Finalizada' : 'Pendiente'}
+                    {/* El comprador SÍ puede seguir comprando una lista vieja,
+                        pero necesita ver de un vistazo que no es de esta
+                        semana: confundir la lista de la feria anterior con la
+                        nueva es justo lo que este indicador evita. */}
+                    <Pill
+                      variant={
+                        list.status === 'completed'
+                          ? 'success'
+                          : isListExpired(list)
+                            ? 'neutral'
+                            : 'pending'
+                      }
+                    >
+                      {list.status === 'completed'
+                        ? 'Finalizada'
+                        : isListExpired(list)
+                          ? formatListAge(list)
+                          : 'Pendiente'}
                     </Pill>
                   </div>
                   <div className="list-card-row">

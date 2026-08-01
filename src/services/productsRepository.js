@@ -49,6 +49,27 @@ export function recordProductUse(productId) {
   })
 }
 
+// Memoria de puesto del catálogo: deja registrado en el PRODUCTO dónde se
+// compra, para que las listas siguientes nazcan ya agrupadas y el usuario no
+// tenga que rearmar los mismos puestos cada semana. Gana la última asignación.
+//
+// Se escribe producto por producto y se ignoran los fallos a propósito: es una
+// conveniencia, no debe tumbar la asignación de puesto que ya quedó guardada
+// en la lista. Un writeBatch fallaría entero si un solo producto fue eliminado
+// del catálogo, o si las reglas nuevas de `products` todavía no se publicaron.
+export async function rememberProductStall(productIds, stall) {
+  const unique = [...new Set((productIds || []).filter(Boolean))]
+  if (unique.length === 0) return
+  await Promise.allSettled(
+    unique.map((productId) =>
+      updateDoc(doc(db, 'products', productId), {
+        stallId: stall?.id || null,
+        stallName: stall?.name || '',
+      }),
+    ),
+  )
+}
+
 export async function findOrCreateProduct(name, defaultUnit, existingProducts, ownerUid) {
   const match = existingProducts.find(
     (p) => p.name.trim().toLowerCase() === name.trim().toLowerCase(),
@@ -56,7 +77,10 @@ export async function findOrCreateProduct(name, defaultUnit, existingProducts, o
   if (match) return match
 
   const id = await createProduct({ name: name.trim(), defaultUnit }, ownerUid)
-  return { id, name: name.trim(), defaultUnit }
+  // Se devuelve la forma completa (no solo id/name/unit) para que quien importa
+  // pueda leer stallId/stallName sin distinguir si el producto ya existía o
+  // acaba de crearse. Uno recién creado todavía no tiene puesto aprendido.
+  return { id, name: name.trim(), defaultUnit, stallId: null, stallName: '' }
 }
 
 export function updateProduct(productId, changes) {

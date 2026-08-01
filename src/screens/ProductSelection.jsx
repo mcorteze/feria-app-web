@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Check, Plus, Search, Sparkles } from 'lucide-react'
+import { Check, Plus, Search, Sparkles, Store } from 'lucide-react'
 import ScreenHeader from '../components/layout/ScreenHeader'
 import { Card, EmptyState, LoadingState, Pill, QuantityOverlay, UnitOverlay } from '../components/ui'
 import { useProducts } from '../hooks/useProducts'
@@ -213,6 +213,13 @@ function ProductPickRow({ product, alreadyAdded, expanded, onToggle, onAdd, savi
           {alreadyAdded ? (
             <Pill variant="success" icon={Check}>
               En tu lista
+            </Pill>
+          ) : null}
+          {/* Puesto recordado del catálogo: al agregarlo, el producto entra a
+              la lista ya agrupado ahí. Mostrarlo hace visible esa memoria. */}
+          {product.stallName ? (
+            <Pill variant="info" icon={Store}>
+              {product.stallName}
             </Pill>
           ) : null}
           {product.lastPrice ? (

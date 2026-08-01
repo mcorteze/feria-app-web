@@ -41,9 +41,27 @@ export function deleteStall(stallId) {
   return deleteDoc(doc(db, 'stalls', stallId))
 }
 
-export async function swapStallOrder(stallA, stallB) {
+// Reescribe locationOrder de forma densa (0..n-1) siguiendo el orden recibido.
+// Reemplaza al intercambio por pares de las flechas subir/bajar: con drag &
+// drop el orden final se conoce completo, y normalizar los índices en cada
+// commit evita que se acumulen huecos o empates que hagan inestable el
+// orderBy('locationOrder') de watchStalls.
+export async function reorderStalls(stallIds) {
   const batch = writeBatch(db)
-  batch.update(doc(db, 'stalls', stallA.id), { locationOrder: stallB.locationOrder })
-  batch.update(doc(db, 'stalls', stallB.id), { locationOrder: stallA.locationOrder })
+  stallIds.forEach((stallId, index) => {
+    batch.update(doc(db, 'stalls', stallId), { locationOrder: index })
+  })
   await batch.commit()
+}
+
+// Nombre genérico para un puesto que el usuario crea sin nombrar. Se busca el
+// mayor "Puesto N" existente en vez de usar stalls.length, para no repetir un
+// nombre cuando se borraron puestos intermedios.
+export function nextStallName(stalls = []) {
+  const used = stalls
+    .map((s) => /^puesto\s+(\d+)$/i.exec((s.name || '').trim()))
+    .filter(Boolean)
+    .map((match) => Number(match[1]))
+  const highest = used.length > 0 ? Math.max(...used) : 0
+  return `Puesto ${highest + 1}`
 }

@@ -1,7 +1,21 @@
 # Flujo activo — Feria App Web
-Actualizado: 2026-07-11
+Actualizado: 2026-08-01
 
 ## Tarea actual
+**Sesión 2026-08-01 — Ciclo de vida de la lista + arreglos de UI móvil.** Cerrada, build y lint limpios. Falta prueba en celular y commit/push.
+
+El usuario reportó "se mezclan los registros entre listas". Se descartó por código: los ítems viven en `lists/{listId}/items` y `buildItemDoc()` fija siempre `isBought:false`/`notFound:false`, así que no existe ruta que cree un ítem premarcado. Era un falso positivo — su esposa editó la lista de la semana anterior y él la abrió creyéndola nueva. Lo que sí era un bug es que **nada en la UI permitía darse cuenta**. Cambios implementados:
+
+1. **Ventana de edición de 72h** (`src/utils/listAge.js`, `LIST_EDIT_WINDOW_HOURS`). Pasadas 72h desde `createdAt`, el planificador ya no puede editar la lista; se le ofrece "Crear lista nueva con estos productos" (`duplicateList()` en `listsRepository`). Decisión del usuario: **solo bloquea al planificador**, el comprador puede terminar de comprar una lista vieja.
+2. **Modal de renovación** con desglose: los pendientes se copian siempre; "no encontrados" se copian por defecto (siguen haciendo falta) y "ya comprados" NO por defecto — ambos con checkbox. Nunca se copia el desenlace.
+3. **La vista del planificador ahora muestra el estado de cada ítem** (comprado / no encontrado / precio pagado). Ocultarlo era la razón de fondo de la confusión: una lista ya comprada se veía idéntica a una nueva.
+4. **Modales centrados, no bottom sheets.** Ver "Contexto crítico" — el bug del teclado NO era de posición.
+5. **Completados al pie**: dentro de cada puesto lo resuelto baja al final, y los puestos completos pasan a una sección aparte con divisor y opacidad reducida.
+6. **Bug "General" corregido** y orden de puestos por `locationOrder` real.
+7. **Drag & drop de puestos** con `@dnd-kit` (core + sortable + utilities), reemplaza las flechas subir/bajar.
+8. **Memoria de puesto en el catálogo.** El puesto es una propiedad del PRODUCTO, no de la lista: si los tomates se compran siempre donde el mismo casero, eso no debe reaprenderse cada semana. `rememberProductStall()` en `productsRepository` escribe `stallId`/`stallName` de vuelta al producto cuando el comprador agrupa en modo Organizar, y los tres puntos de entrada de una lista nueva la consumen (selector de productos, importación JSON, y `duplicateList` vía la copia del ítem). Gana la última asignación. Al borrar un puesto se limpia la memoria de esos productos, para no dejar grupos fantasma.
+
+## Tarea anterior
 Login estable. Tras las 4 mejoras iniciales (import JSON, botón Volver, avatar/saludo, paleta con superficies claras sobre tema oscuro), el usuario reportó 2 bugs reales (bucle de navegación en Volver, rol incorrecto al importar como comprador — ambos corregidos) y pidió invertir la decisión de paleta: la app pasa a **tema claro** (no oscuro), más 2 features grandes del original que faltaban: modo "Organizar" para el comprador (agrupar/reordenar productos por puesto) y un directorio de colaboradores habituales. Las 3 features grandes (tema claro, modo Organizar, colaboradores habituales) implementadas y verificadas con build limpio. Pendiente: commit + push, publicar `firestore.rules` actualizado (`firebase deploy --only firestore:rules`, requiere terminal propia del usuario), y prueba visual/funcional completa en el celular.
 
 ## Decisiones tomadas esta sesión
@@ -14,6 +28,11 @@ Login estable. Tras las 4 mejoras iniciales (import JSON, botón Volver, avatar/
 - [2026-07-10] Proyecto construido completo vía agente en background: tokens, servicios (repository pattern), hooks de dominio, componentes UI, 7 pantallas, `firestore.rules`. `npm run build` verificado limpio.
 
 ## Pendiente
+- [ ] **PUBLICAR `firestore.rules` (bloqueante para la memoria de puesto).** `firebase deploy --only firestore:rules`. Se relajó `allow update` en `products`: el dueño edita todo, cualquier otro usuario solo `stallId`/`stallName`/`useCount`. Sin publicar, el comprador (que no es dueño del catálogo) recibe permission-denied al agrupar y la memoria no persiste — degrada en silencio gracias al `Promise.allSettled` de `rememberProductStall`, la agrupación de la lista sí se guarda. Ese mismo cambio arregla un bug latente: `recordProductUse` fallaba al agregar un producto de catálogo ajeno.
+- [ ] **Probar en celular los cambios del 2026-08-01**: editar el nombre de una lista (el teclado ya no debe cerrarse al escribir), arrastrar un puesto para reordenarlo, y ver la sección de completados al pie.
+- [ ] **No existe forma manual de finalizar una lista.** `completeList` solo se llama desde `checkAllResolvedAndComplete`, que exige que el 100% de los ítems quede resuelto. Si el comprador vuelve con un producto sin marcar, la lista queda `active` para siempre. Falta un botón "Finalizar compra". Detectado esta sesión, **no implementado**.
+- [ ] El código de invitación es el ID crudo de Firestore (20 caracteres aleatorios): imposible distinguir una lista de otra al pegarlo por WhatsApp. Evaluar un código corto legible.
+- [ ] Scopear `products` y `stalls` por dueño (query + reglas) — ver Contexto crítico.
 - [ ] Usuario debe confirmar que el login ya funciona de forma estable en su celular tras agregar el origen OAuth en Google Cloud Console
 - [ ] Code-splitting del bundle de Firebase si el tamaño (~848KB) llega a ser un problema real (nota del agente constructor, no urgente)
 - [ ] Evaluar si conviene mostrar avatares de TODOS los colaboradores en History (hoy solo muestra nombre/total, sin grupo)
@@ -21,6 +40,12 @@ Login estable. Tras las 4 mejoras iniciales (import JSON, botón Volver, avatar/
 - [ ] El placeholder de Firebase Hosting (`firebase-hosting-placeholder/`) sigue siendo necesario — activa el endpoint `/__/firebase/init.json` que el SDK de Auth requiere sin importar en qué dominio viva la app real. No borrarlo.
 
 ## Contexto crítico (lo que no puede olvidarse)
+- **El bug del teclado en móvil era un loop de foco, no el bottom sheet.** `Modal.jsx` tenía `useEffect(..., [open, onClose])` y todos los llamadores pasan `onClose` como flecha inline: cada tecla re-renderizaba al padre, cambiaba la identidad de `onClose`, el efecto se limpiaba (devolvía el foco) y se re-ejecutaba (`panel.focus()`), robándole el foco al input y cerrando el teclado. Ahora `onClose` vive en una ref y el efecto depende solo de `[open]`. **No volver a meter `onClose` en las dependencias de ese efecto.**
+- **Los modales son centrados en todos los tamaños, nunca bottom sheets.** En una web usada como app, Chrome móvil le resta espacio a cualquier overlay pegado al borde inferior. Además `index.html` declara `interactive-widget=resizes-content` en el viewport, que es lo que hace que el viewport de layout se encoja al abrir el teclado. Si eso se quita, los `dvh` vuelven a medir la pantalla completa y el modal queda tapado.
+- **`--shadow-modal` proyecta hacia arriba** (es para la `organize-bar` anclada abajo). El diálogo centrado usa `--shadow-dialog`.
+- **Los ítems copian `stallName`, pero el nombre real se resuelve desde la colección `stalls` por `stallId`.** No confiar en `item.stallName` para renderizar: hay datos antiguos con esa copia vacía (puestos creados sin nombre), que es lo que producía el rótulo "General" en grupos que sí tenían puesto.
+- **Los grupos se ordenan por `locationOrder`, no alfabéticamente.** El orden alfabético era la razón por la que reordenar puestos no tenía ningún efecto visible.
+- `products` y `stalls` son colecciones **globales sin filtro por dueño** en la query (`watchProducts`/`watchStalls` leen todo, y las reglas permiten `read: if isSignedIn()`). Hoy no molesta porque son 2 usuarios; con un tercero el catálogo se contamina. `stalls` además permite `update, delete` a cualquier autenticado. **Deuda técnica conocida, aún sin resolver.**
 - El modelo de datos usa `collaborators: [{uid, role}]` por lista — NO reintroducir un `list_mode` global como tenía el original, fue un hallazgo de auditoría a corregir.
 - `estimatedPrice` (planner) y `paidPrice` (buyer) son campos separados a propósito — no fusionarlos.
 - Toda la paleta vive en `src/styles/tokens.css`, incluye soporte de tema oscuro vía `prefers-color-scheme` + `data-theme` override.

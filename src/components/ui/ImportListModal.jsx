@@ -81,6 +81,11 @@ export default function ImportListModal({
           quantity: rawItem.quantity || 1,
           unit,
           comment: rawItem.comment || '',
+          // Memoria de puesto del catálogo: si el producto ya vivía en un
+          // puesto, la lista importada nace agrupada. El JSON importado nunca
+          // trae puesto — el dato viene del catálogo, no del archivo.
+          stallId: product.stallId || null,
+          stallName: product.stallName || '',
         })
       }
 

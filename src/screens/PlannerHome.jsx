@@ -24,6 +24,7 @@ import { useLists } from '../hooks/useLists'
 import { useProducts } from '../hooks/useProducts'
 import { createList } from '../services/listsRepository'
 import { formatDateTime, formatShortDate } from '../utils/format'
+import { isListExpired } from '../utils/listAge'
 import { setLastRole } from '../utils/lastRole'
 import '../styles/screen.css'
 import '../styles/listCard.css'
@@ -156,8 +157,23 @@ export default function PlannerHome() {
               <Card key={list.id} onClick={() => navigate(`/list/${list.id}`)}>
                 <div className="list-card-row">
                   <span className="list-card-name">{list.name}</span>
-                  <Pill variant={list.status === 'completed' ? 'success' : 'pending'}>
-                    {list.status === 'completed' ? 'Finalizada' : 'Pendiente'}
+                  {/* Una lista cerrada por antigüedad ya no se puede editar: se
+                      distingue de una pendiente real para no abrirla esperando
+                      poder agregarle productos. */}
+                  <Pill
+                    variant={
+                      list.status === 'completed'
+                        ? 'success'
+                        : isListExpired(list)
+                          ? 'info'
+                          : 'pending'
+                    }
+                  >
+                    {list.status === 'completed'
+                      ? 'Finalizada'
+                      : isListExpired(list)
+                        ? 'Cerrada'
+                        : 'Pendiente'}
                   </Pill>
                 </div>
                 <div className="list-card-row">

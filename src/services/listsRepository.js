@@ -13,6 +13,7 @@ import {
   where,
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
+import { addItemsBatch } from './itemsRepository'
 
 const listsCollection = collection(db, 'lists')
 
@@ -94,6 +95,66 @@ export async function createList(name, owner, role = 'planner', extraCollaborato
     collaboratorUids,
   })
   return docRef.id
+}
+
+// Divide los ítems de una lista según su desenlace, para que la pantalla de
+// renovación pueda mostrar cuántos hay de cada tipo y dejar decidir al usuario.
+export function splitItemsByOutcome(items = []) {
+  const pending = []
+  const bought = []
+  const notFound = []
+  for (const item of items) {
+    if (item.notFound) notFound.push(item)
+    else if (item.isBought) bought.push(item)
+    else pending.push(item)
+  }
+  return { pending, bought, notFound }
+}
+
+// Crea una lista NUEVA con los productos de otra. Nunca copia el desenlace:
+// addItemsBatch reconstruye cada ítem desde cero (isBought/notFound en false,
+// paidPrice en null), que es justamente lo que evita arrastrar el estado de la
+// feria anterior. Se conservan cantidad, unidad, precio estimado y puesto.
+export async function duplicateList(sourceList, items, owner, options = {}) {
+  const { name, includeBought = false, includeNotFound = true } = options
+
+  const buyers = (sourceList.collaborators || [])
+    .filter((c) => c.uid !== owner.uid)
+    .map((c) => ({
+      uid: c.uid,
+      displayName: c.displayName || '',
+      photoURL: c.photoURL || '',
+    }))
+
+  const { pending, bought, notFound } = splitItemsByOutcome(items)
+  const selected = [
+    ...pending,
+    ...(includeBought ? bought : []),
+    ...(includeNotFound ? notFound : []),
+  ]
+
+  const listId = await createList(name, owner, 'planner', buyers)
+
+  if (selected.length > 0) {
+    await addItemsBatch(
+      listId,
+      selected.map((item) => ({
+        productId: item.productId,
+        productName: item.productName,
+        quantity: item.quantity,
+        unit: item.unit,
+        estimatedPrice: item.estimatedPrice,
+        // El comentario de un ítem no encontrado es el motivo por el que no se
+        // encontró la vez pasada ("no había en el puesto habitual"); no aplica
+        // a la feria nueva y solo confundiría al comprador.
+        comment: item.notFound ? '' : item.comment,
+        stallId: item.stallId,
+        stallName: item.stallName,
+      })),
+    )
+  }
+
+  return listId
 }
 
 export function renameList(listId, name) {

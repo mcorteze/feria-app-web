@@ -3,7 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- interactive-widget=resizes-content: por defecto Chrome Android abre el
+         teclado virtual SIN encoger el viewport de layout, así que un overlay
+         `position: fixed` (modales, barras inferiores) queda tapado por el
+         teclado y los dvh siguen midiendo la pantalla completa. Con
+         resizes-content el viewport de layout sí se encoge, y centrar el modal
+         con dvh basta para que quede siempre visible sobre el teclado. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
     <title>Feria App</title>
     <script>
       // Complemento de public/404.html: si venimos de una ruta profunda
