@@ -590,6 +590,7 @@ export default function ActiveList() {
       <AssignStallModal
         open={assignModalOpen}
         onClose={() => setAssignModalOpen(false)}
+        stalls={stalls}
         listItems={items}
         onCreateAndAssign={handleCreateAndAssign}
         onAssignToExisting={handleAssignToExisting}
